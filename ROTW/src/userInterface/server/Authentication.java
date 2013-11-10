@@ -25,12 +25,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import dataBase.DatabaseController;
 import util.Shaker;
 import util.Utilities;
 
 @SuppressWarnings("serial")
-public class Authentication extends JFrame implements FocusListener, ActionListener, KeyListener {
+public class Authentication extends JFrame implements FocusListener, ActionListener, KeyListener, DocumentListener {
 	
 	private int width = 800;
 	private int height = 600;
@@ -50,6 +53,8 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	private JButton bSignIn = new JButton();
 	
 	private Shaker shacker;
+	
+	private Thread checker;
 	
 	public Authentication() {
 		super("Authentication");
@@ -137,16 +142,41 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 		
 		//Component's listeners
 		tfUserName.addFocusListener(this);
+		tfUserName.getDocument().addDocumentListener(this);
 		bSignIn.addActionListener(this);
-		tfUserName.addKeyListener(this);
 		pfPassword.addKeyListener(this);
 	}
 
 	@Override
 	public void focusLost(FocusEvent e) {
 		if(e.getSource().equals(tfUserName)) {
-			if(tfUserName.getText().length() > 0) {
-				progress.setVisible(true);
+			
+			if(tfUserName.getText().length() >= 0) {
+					progress.setVisible(true);
+					checker = new Thread(new Runnable() {	
+					
+					@Override
+					public void run() {
+						//TODO Thread to send to database the name validation.
+						try {
+							if(DatabaseController.validateUserName(tfUserName.getText())) {
+								if(error.isVisible()) {
+									error.setVisible(false);
+								}
+								correct.setVisible(true);
+							} else {
+								if(correct.isVisible()) {
+									correct.setVisible(false);
+								}
+								error.setVisible(true);
+							}
+						} catch (InterruptedException e) {
+							//Nothing to do there.
+						}
+						progress.setVisible(false);
+					}
+				});
+				checker.start();
 			}
 		}
 	}
@@ -174,15 +204,7 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getSource().equals(tfUserName)) {
-			if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-				if(tfUserName.getText().length() > 0) {
-					if(progress.isVisible()) {
-						progress.setVisible(false);
-					}
-				}
-			}
-		}
+		
 	}
 
 	@Override
@@ -192,6 +214,9 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 				tfUserName.setText(null);
 				pfPassword.setText(null);
 				tfUserName.requestFocus();
+				if(checker.isAlive()) {
+					checker.interrupt();
+				}
 				shacker.shakeComponent(authPanel);
 			}
 		}
@@ -200,6 +225,33 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	@Override
 	public void keyTyped(KeyEvent e) {
 		
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+	
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		if(progress.isVisible()) {
+			progress.setVisible(false);
+		} else if(correct.isVisible()) {
+			correct.setVisible(false);
+		} else if(error.isVisible()) {
+			error.setVisible(false);
+		}
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		if(progress.isVisible()) {
+			progress.setVisible(false);
+		} else if(correct.isVisible()) {
+			correct.setVisible(false);
+		} else if(error.isVisible()) {
+			error.setVisible(false);
+		}
 	}
 	
 	public static void main(String[] args) {
