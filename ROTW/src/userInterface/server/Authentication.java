@@ -184,10 +184,12 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	@Override
 	public void focusGained(FocusEvent e) {
 		if(e.getSource().equals(tfUserName)) {
-			if(tfUserName.getText().length() == 0) {
-				if (progress.isVisible()) {
-					progress.setVisible(false);
-				}
+			if(progress.isVisible()) {
+				progress.setVisible(false);
+			} else if(correct.isVisible()) {
+				correct.setVisible(false);
+			} else if(error.isVisible()) {
+				error.setVisible(false);
 			}
 		}
 	}
@@ -198,6 +200,9 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 			tfUserName.setText(null);
 			pfPassword.setText(null);
 			tfUserName.requestFocus();
+			if(checker.isAlive()) {
+				checker.interrupt();
+			}
 			shacker.shakeComponent(authPanel);
 		}
 	}
