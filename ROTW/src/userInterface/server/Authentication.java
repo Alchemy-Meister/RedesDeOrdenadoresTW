@@ -54,7 +54,8 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	
 	private Shaker shacker;
 	
-	private Thread checker;
+	private Thread userChecker;
+	private Thread passChecker;
 	
 	public Authentication() {
 		super("Authentication");
@@ -152,31 +153,33 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 		if(e.getSource().equals(tfUserName)) {
 			
 			if(tfUserName.getText().length() >= 0) {
-					progress.setVisible(true);
-					checker = new Thread(new Runnable() {	
-					
-					@Override
-					public void run() {
-						//TODO Thread to send to database the name validation.
-						try {
-							if(DatabaseController.validateUserName(tfUserName.getText())) {
-								if(error.isVisible()) {
-									error.setVisible(false);
+				progress.setVisible(true);
+				if(userChecker == null || !userChecker.isAlive()) {
+					userChecker = new Thread(new Runnable() {	
+				
+						@Override
+						public void run() {
+							//TODO Thread to send to database the name validation.
+							try {
+								if(DatabaseController.validateUserName(tfUserName.getText())) {
+									if(error.isVisible()) {
+										error.setVisible(false);
+									}
+									correct.setVisible(true);
+								} else {
+									if(correct.isVisible()) {
+										correct.setVisible(false);
+									}
+									error.setVisible(true);
 								}
-								correct.setVisible(true);
-							} else {
-								if(correct.isVisible()) {
-									correct.setVisible(false);
-								}
-								error.setVisible(true);
+							} catch (InterruptedException e) {
+								//Nothing to do there.
 							}
-						} catch (InterruptedException e) {
-							//Nothing to do there.
+							progress.setVisible(false);
 						}
-						progress.setVisible(false);
-					}
-				});
-				checker.start();
+					});
+				}
+				userChecker.start();
 			}
 		}
 	}
@@ -184,6 +187,9 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	@Override
 	public void focusGained(FocusEvent e) {
 		if(e.getSource().equals(tfUserName)) {
+			if(userChecker != null && userChecker.isAlive()) {
+				userChecker.interrupt();
+			}
 			if(progress.isVisible()) {
 				progress.setVisible(false);
 			} else if(correct.isVisible()) {
@@ -197,13 +203,7 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(bSignIn)) {
-			tfUserName.setText(null);
-			pfPassword.setText(null);
-			tfUserName.requestFocus();
-			if(checker.isAlive()) {
-				checker.interrupt();
-			}
-			shacker.shakeComponent(authPanel);
+			validatePassUser();
 		}
 	}
 	
@@ -216,13 +216,7 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	public void keyReleased(KeyEvent e) {
 		if(e.getSource().equals(pfPassword)) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-				tfUserName.setText(null);
-				pfPassword.setText(null);
-				tfUserName.requestFocus();
-				if(checker.isAlive()) {
-					checker.interrupt();
-				}
-				shacker.shakeComponent(authPanel);
+				validatePassUser();
 			}
 		}
 	}
@@ -256,6 +250,33 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 			correct.setVisible(false);
 		} else if(error.isVisible()) {
 			error.setVisible(false);
+		}
+	}
+	
+	private void validatePassUser() {
+		if(passChecker == null || !passChecker.isAlive()) {
+		passChecker = new Thread(new Runnable() {
+			
+				@Override
+				public void run() {
+					try {
+						if(!DatabaseController.validateUser(tfUserName.getText(), Utilities.charArrayToString(pfPassword.getPassword()))) {
+							tfUserName.setText(null);
+							pfPassword.setText(null);
+							tfUserName.requestFocus();
+							if(userChecker.isAlive()) {
+								userChecker.interrupt();
+							}
+							shacker.shakeComponent(authPanel);
+						} else {
+							System.out.println("Correct");
+						}
+					} catch (InterruptedException e) {
+					
+					}
+				}
+			});
+			passChecker.start();
 		}
 	}
 	

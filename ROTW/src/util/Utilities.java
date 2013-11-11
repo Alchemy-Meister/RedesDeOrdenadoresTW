@@ -39,4 +39,12 @@ public class Utilities {
             }
             return image;
     }
+    
+    public static String charArrayToString(char[] charArray) {
+    	StringBuilder string = new StringBuilder();
+    	for(int i = 0; i < charArray.length; i++) {
+    		string.append(charArray[i]);
+    	}
+    	return string.toString();
+    }
 }
