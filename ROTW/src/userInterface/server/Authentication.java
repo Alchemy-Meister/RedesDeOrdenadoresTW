@@ -8,7 +8,6 @@ import graphicInterface.SpinningWheel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -33,14 +32,8 @@ import util.Shaker;
 import util.Utilities;
 
 @SuppressWarnings("serial")
-public class Authentication extends JFrame implements FocusListener, ActionListener, KeyListener, DocumentListener {
+public class Authentication extends JBackgroundedPanel implements FocusListener, ActionListener, KeyListener, DocumentListener {
 	
-	private int width = 800;
-	private int height = 600;
-	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-	private int deviceHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-	
-	private JBackgroundedPanel panel = new JBackgroundedPanel("resources/UmbrellaSignIn.png");
 	private GradientPanel authPanel;
 	
 	private JLabel lUserName = new JLabel("USER");
@@ -57,12 +50,16 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 	private Thread userChecker;
 	private Thread passChecker;
 	
-	public Authentication() {
-		super("Authentication");
+	private JFrame parent;
+	
+	public Authentication(JFrame parent) {
+		super("resources/UmbrellaSignIn.png");
+		
+		this.parent = parent;
 		
 		//Window's components.
-		panel.setSize(new Dimension(800, 600));
-		panel.setLayout(null);
+		this.setSize(new Dimension(800, 600));
+		this.setLayout(null);
 		
 		RotatingComponent rc = new RotatingComponent("resources/UmbrellaLogo.png", 95, 97, 255, 255, 0.5);
 		authPanel = new GradientPanel(new Color(173, 173, 173), new Color(78, 78, 78));
@@ -126,20 +123,8 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 		
 		authPanel.add(validationPanel);
 		
-		panel.add(rc);
-		panel.add(authPanel);
-		
-		this.getContentPane().setPreferredSize(new Dimension(800, 600));
-		this.getContentPane().setLayout(null);
-		
-		this.add(panel);
-		
-		//Window's properties. 
-		this.setLocation(deviceWidth/2 - width/2, deviceHeight/2 - height/2);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setResizable(false);
-		this.pack();
-		this.setVisible(true);
+		this.add(rc);
+		this.add(authPanel);
 		
 		//Component's listeners
 		tfUserName.addFocusListener(this);
@@ -269,7 +254,10 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 							}
 							shacker.shakeComponent(authPanel);
 						} else {
-							System.out.println("Correct");
+							parent.add(new Menu());
+							parent.remove(Authentication.this);
+							Authentication.this.setVisible(false);
+							parent.repaint();
 						}
 					} catch (InterruptedException e) {
 					
@@ -278,9 +266,5 @@ public class Authentication extends JFrame implements FocusListener, ActionListe
 			});
 			passChecker.start();
 		}
-	}
-	
-	public static void main(String[] args) {
-		new Authentication();
 	}
 }

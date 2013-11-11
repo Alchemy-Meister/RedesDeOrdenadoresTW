@@ -4,22 +4,16 @@ import graphicInterface.RotatingComponent;
 
 import java.awt.FlowLayout;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class Menu extends JFrame {
+public class Menu extends JPanel {
 	
 	public Menu() {
 		this.setSize(800, 600);
-		this.getContentPane().setLayout(new FlowLayout());
+		this.setLayout(new FlowLayout());
 		RotatingComponent rc = new RotatingComponent("resources/UmbrellaLogo.png",23, 23, 23, 23, 3);
-		this.getContentPane().add(rc);
+		this.add(rc);
 		
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
-	}
-	
-	public static void main(String[] args) {
-		new Menu();
 	}
 }
