@@ -1,5 +1,6 @@
 package userInterface.server;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
@@ -17,9 +18,11 @@ public class AdminClient extends JFrame {
 		
 		this.getContentPane().setPreferredSize(new Dimension(800, 600));
 		this.getContentPane().setLayout(null);
+		this.getContentPane().setBackground(Color.BLACK);
 		
 		//Windows components.
-		this.add(new Authentication(this));
+		Authentication a = new Authentication(this);
+		this.add(a);
 		
 		//Window's Properties.
 		this.pack();

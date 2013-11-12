@@ -1,5 +1,6 @@
 package userInterface.server;
 
+import graphicInterface.Animate;
 import graphicInterface.GradientPanel;
 import graphicInterface.JBackgroundedPanel;
 import graphicInterface.RotatingComponent;
@@ -8,6 +9,7 @@ import graphicInterface.SpinningWheel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -51,6 +53,9 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	private Thread passChecker;
 	
 	private JFrame parent;
+	
+	protected Animate panelSigninA;
+	protected Animate panelMenuA;
 	
 	public Authentication(JFrame parent) {
 		super("resources/UmbrellaSignIn.png");
@@ -254,10 +259,20 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 							}
 							shacker.shakeComponent(authPanel);
 						} else {
-							parent.add(new Menu());
+							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
+									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
+											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 550);
+							Menu menu = new Menu();
+							menu.setLocation(Authentication.this.getX() + Authentication.this.getWidth(), Authentication.this.getY());
+							parent.add(menu);
+							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 550);
+							panelMenuA.start();
+							panelSigninA.start();
+							while(!panelSigninA.hasFinished()) {
+								//Waiting bitch
+								Thread.sleep(0);
+							}
 							parent.remove(Authentication.this);
-							Authentication.this.setVisible(false);
-							parent.repaint();
 						}
 					} catch (InterruptedException e) {
 					

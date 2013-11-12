@@ -1,5 +1,8 @@
 package userInterface.client;
 
-public class Authentication {
+import javax.swing.JPanel;
+
+@SuppressWarnings("serial")
+public class Authentication extends JPanel {
 
 }
