@@ -20,7 +20,6 @@ public class GradientPanel extends JPanel {
 	
 	@Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         int w = this.getWidth();
         int h = this.getHeight();

@@ -8,7 +8,6 @@ import graphicInterface.SpinningWheel;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +17,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -69,9 +67,8 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		RotatingComponent rc = new RotatingComponent("resources/UmbrellaLogo.png", 95, 97, 255, 255, 0.5);
 		authPanel = new GradientPanel(new Color(173, 173, 173), new Color(78, 78, 78));
 		authPanel.setBounds(425, 200, 300, 58);
+		authPanel.setLayout(null);
 		
-		authPanel.setAlignmentY(JPanel.CENTER_ALIGNMENT);
-		authPanel.setLayout(new FlowLayout());
 		authPanel.setBackground(Color.GRAY);
 		authPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 10, 11), 1));
 		
@@ -80,53 +77,47 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		tfUserName.setBorder(BorderFactory.createLineBorder(new Color(123, 0, 1), 2));
 		pfPassword.setBorder(BorderFactory.createLineBorder(new Color(123, 0, 1), 2));
 		
+		lUserName.setBounds(70, 8, 40, 23);
+		//lUserName.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
-		Box labelBox = Box.createVerticalBox();
+		lPassword.setBounds(15, lUserName.getY() + lUserName.getHeight() - 4, 100, 25);
+		//lPassword.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
-		labelBox.add(lUserName);
-		labelBox.add(Box.createRigidArea(new Dimension(0, 10)));
-		labelBox.add(lPassword);
+		authPanel.add(lUserName);
+		authPanel.add(lPassword);
 		
-		lUserName.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-		lPassword.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+		tfUserName.setBounds(lUserName.getX() + lUserName.getWidth(), 8, 145, lUserName.getHeight() - 3);
+		pfPassword.setBounds(lUserName.getX() + lUserName.getWidth(), lPassword.getY() + 4, tfUserName.getWidth(), tfUserName.getHeight() + 2);
 		
-		authPanel.add(labelBox);
+		authPanel.add(tfUserName);
+		authPanel.add(pfPassword);
 		
-		authPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-		
-		Box fieldBox = Box.createVerticalBox();
-		
-		fieldBox.add(tfUserName);
-		fieldBox.add(Box.createRigidArea(new Dimension(0, 6)));
-		fieldBox.add(pfPassword);
-		
-		authPanel.add(fieldBox);
-		
-		JPanel validationPanel = new JPanel();
-		validationPanel.setPreferredSize(new Dimension(25, 50));
-		validationPanel.setOpaque(false);
-		validationPanel.setLayout(null);
-		
-		progress = new SpinningWheel(0, 2, 20, 55);
+		progress = new SpinningWheel(5, 0, 20, 55);
 		progress.setVisible(false);
 		
-		correct = new JBackgroundedPanel("resources/Correct.png", 0, 2, 20, 20);
+		correct = new JBackgroundedPanel("resources/Correct.png", 5, 0, 20, 20);
 		correct.setVisible(false);
 		
-		error = new JBackgroundedPanel("resources/Error.png", 0, 2, 20, 20);
+		error = new JBackgroundedPanel("resources/Error.png", 5, 0, 20, 20);
 		error.setVisible(false);
 		
 		bSignIn.setIcon(new ImageIcon(Utilities.resizeImage(20, 20, "resources/NextButton.png")));
-		bSignIn.setBounds(0, 28, bSignIn.getIcon().getIconWidth(), bSignIn.getIcon().getIconHeight());
+		bSignIn.setBounds(5, 23, bSignIn.getIcon().getIconWidth(), bSignIn.getIcon().getIconHeight());
 		bSignIn.setBorderPainted(false);
 		bSignIn.setContentAreaFilled(false);
+		bSignIn.setFocusable(false);
 		
-		validationPanel.add(correct);
-		validationPanel.add(error);
-		validationPanel.add(progress);
-		validationPanel.add(bSignIn);
+		JPanel panelAux = new JPanel();
+		panelAux.setLayout(null);
+		panelAux.setBounds(tfUserName.getX() + tfUserName.getWidth() + 5, lUserName.getY(), 50, 50);
+		panelAux.setOpaque(false);
 		
-		authPanel.add(validationPanel);
+		panelAux.add(correct);
+		panelAux.add(error);
+		panelAux.add(progress);
+		panelAux.add(bSignIn);
+		
+		authPanel.add(panelAux);
 		
 		this.add(rc);
 		this.add(authPanel);
@@ -136,6 +127,8 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		tfUserName.getDocument().addDocumentListener(this);
 		bSignIn.addActionListener(this);
 		pfPassword.addKeyListener(this);
+		
+		
 	}
 
 	@Override
@@ -166,6 +159,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 								//Nothing to do there.
 							}
 							progress.setVisible(false);
+							progress.repaint();
 						}
 					});
 				}
@@ -262,7 +256,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
 									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
 											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 550);
-							Menu menu = new Menu();
+							Menu menu = new Menu(parent);
 							menu.setLocation(Authentication.this.getX() + Authentication.this.getWidth(), Authentication.this.getY());
 							parent.add(menu);
 							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 550);

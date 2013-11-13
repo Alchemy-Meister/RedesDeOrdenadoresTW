@@ -16,18 +16,20 @@ public class AdminClient extends JFrame {
 	
 	public AdminClient() {
 		
-		this.getContentPane().setPreferredSize(new Dimension(800, 600));
+		this.getContentPane().setPreferredSize(new Dimension(width, height));
 		this.getContentPane().setLayout(null);
 		this.getContentPane().setBackground(Color.BLACK);
 		
 		//Windows components.
 		Authentication a = new Authentication(this);
+		//a.setLocation(800, 0);
 		this.add(a);
 		
 		//Window's Properties.
 		this.pack();
 		this.setLocation(deviceWidth/2 - width/2, deviceHeight/2 - height/2);
 		this.setVisible(true);
+		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 	}
