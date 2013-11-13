@@ -13,7 +13,7 @@ public class DatabaseController {
              //Loads the driver.
              Class.forName("org.sqlite.JDBC").newInstance();
              //returns the connection to the resource.
-             return DriverManager.getConnection("jdbc:sqlite::resource:" + DatabaseController.class.getResource("dataBase.sqlite"));
+             return DriverManager.getConnection("jdbc:sqlite::resource:" + DatabaseController.class.getResource("database.sqlite"));
      } catch (ClassNotFoundException e) {
      
      } catch (SQLException e) {
@@ -38,6 +38,9 @@ public class DatabaseController {
 			if(result.next()) {
 				correct = true;
 			}
+			result.close();
+			statement.close();
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -55,6 +58,9 @@ public class DatabaseController {
 				if(result.next()) {
 					correct = true;
 				}
+				result.close();
+				statement.close();
+				connection.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
