@@ -27,8 +27,6 @@ public class DatabaseController {
 	}
 	
 	public static boolean validateUserName(String userName) throws InterruptedException {
-		//TODO Delete delay simulation;
-		Thread.sleep(1000);
 		Boolean correct = false;
 		Connection connection = connectToDatabase();
 		try {

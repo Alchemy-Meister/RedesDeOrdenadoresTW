@@ -19,7 +19,6 @@ import java.awt.event.KeyListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -27,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import connection.Client;
 import dataBase.DatabaseController;
 import util.Shaker;
 import util.Utilities;
@@ -50,15 +50,16 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	private Thread userChecker;
 	private Thread passChecker;
 	
-	private JFrame parent;
+	private AdminClient parent;
 	
 	protected Animate panelSigninA;
 	protected Animate panelMenuA;
 	
-	public Authentication(JFrame parent) {
+	public Authentication(AdminClient parent) {
 		super("resources/UmbrellaSignIn.png");
 		
 		this.parent = parent;
+		parent.client = new Client("127.0.0.1", 1234);
 		
 		//Window's components.
 		this.setSize(new Dimension(800, 600));
@@ -143,20 +144,16 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 						@Override
 						public void run() {
 							//TODO Thread to send to database the name validation.
-							try {
-								if(DatabaseController.validateUserName(tfUserName.getText())) {
-									if(error.isVisible()) {
-										error.setVisible(false);
-									}
-									correct.setVisible(true);
-								} else {
-									if(correct.isVisible()) {
-										correct.setVisible(false);
-									}
-									error.setVisible(true);
+							if(parent.client.validateUserName(tfUserName.getText())) {
+								if(error.isVisible()) {
+									error.setVisible(false);
 								}
-							} catch (InterruptedException e) {
-								//Nothing to do there.
+								correct.setVisible(true);
+							} else {
+								if(correct.isVisible()) {
+									correct.setVisible(false);
+								}
+								error.setVisible(true);
 							}
 							progress.setVisible(false);
 							progress.repaint();
@@ -255,11 +252,11 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 						} else {
 							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
 									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
-											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 550);
+											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 350);
 							Menu menu = new Menu(parent);
 							menu.setLocation(Authentication.this.getX() + Authentication.this.getWidth(), Authentication.this.getY());
 							parent.add(menu);
-							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 550);
+							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 350);
 							panelMenuA.start();
 							panelSigninA.start();
 							while(!panelSigninA.hasFinished()) {

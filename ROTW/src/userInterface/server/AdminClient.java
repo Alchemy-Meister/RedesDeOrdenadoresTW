@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+import connection.Client;
+
 @SuppressWarnings("serial")
 public class AdminClient extends JFrame {
 	
@@ -13,6 +15,7 @@ public class AdminClient extends JFrame {
 	private int height = 600;
 	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	private int deviceHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+	public Client client;
 	
 	public AdminClient() {
 		

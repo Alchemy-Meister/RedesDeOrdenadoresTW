@@ -2,16 +2,18 @@ package connection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class Server {
+	
+	int i = 0;
 	
 	public Server(int port) {
 		try {
 			ServerSocket serverS = new ServerSocket(port);
 			while(true) {
-				Socket clientSocket = serverS.accept();
+				SocketManager clientSocket = new SocketManager(serverS.accept());
 				new Thread(new Service(clientSocket)).start();
+				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

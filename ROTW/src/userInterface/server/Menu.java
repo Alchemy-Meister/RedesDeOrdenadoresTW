@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -18,11 +17,11 @@ public class Menu extends JPanel implements ActionListener {
 	
 	JButton signout = new JButton("Sign Out");
 	
-	JFrame parent;
+	AdminClient parent;
 	Animate menuPanelA;
 	Animate authPanelA;
 	
-	public Menu(JFrame parent) {
+	public Menu(AdminClient parent) {
 		
 		this.parent = parent;
 		
@@ -46,12 +45,13 @@ public class Menu extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(signout)) {
+			parent.client.signOut();
 			Authentication authentication = new Authentication(parent);
 			authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
 			parent.add(authentication);
-			authPanelA = new Animate(authentication, authentication.getBounds(), Menu.this.getBounds(), 550);
+			authPanelA = new Animate(authentication, authentication.getBounds(), Menu.this.getBounds(), 350);
 			menuPanelA = new Animate(Menu.this, Menu.this.getBounds(), new Rectangle(Menu.this.getX() + Menu.this.getWidth(),
-					Menu.this.getY(), Menu.this.getWidth(), Menu.this.getHeight()), 550);
+					Menu.this.getY(), Menu.this.getWidth(), Menu.this.getHeight()), 350);
 			authPanelA.start();
 			menuPanelA.start();
 			new Thread(new Runnable() {
