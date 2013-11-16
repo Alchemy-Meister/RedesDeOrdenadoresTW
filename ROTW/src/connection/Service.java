@@ -15,7 +15,7 @@ public class Service implements Runnable {
 
 	@Override
 	public void run() {
-		while(!exit) {
+		while(!exit && clientSocket.isConnected()) {
 			try {
 				String message = clientSocket.Leer();
 				if(message != null) {

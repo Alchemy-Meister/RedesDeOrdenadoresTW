@@ -16,7 +16,7 @@ import java.io.*;
  * @version 1.0
  */
 
-public class SocketManager {
+public class SocketManager extends Socket {
     private Socket mySocket;
 
     private DataOutputStream bufferEscritura;

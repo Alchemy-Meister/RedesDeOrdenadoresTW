@@ -3,6 +3,8 @@ package userInterface.server;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
@@ -33,12 +35,18 @@ public class AdminClient extends JFrame {
 		this.setLocation(deviceWidth/2 - width/2, deviceHeight/2 - height/2);
 		this.setVisible(true);
 		this.setResizable(false);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			
+			@Override
+            public void windowClosing(WindowEvent e) {
+                	client.signOut();
+                	System.exit(0);
+                }
+		});
 		
 	}
 	
 	public static void main(String[] args) {
 		new AdminClient();
 	}
-
 }
