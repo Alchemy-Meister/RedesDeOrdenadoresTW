@@ -27,7 +27,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import connection.Client;
-import dataBase.DatabaseController;
 import util.Shaker;
 import util.Utilities;
 
@@ -143,7 +142,6 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				
 						@Override
 						public void run() {
-							//TODO Thread to send to database the name validation.
 							if(parent.client.validateUserName(tfUserName.getText())) {
 								if(error.isVisible()) {
 									error.setVisible(false);
@@ -241,7 +239,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(!DatabaseController.validateUser(tfUserName.getText(), Utilities.charArrayToString(pfPassword.getPassword()))) {
+						if(!parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
 							tfUserName.setText(null);
 							pfPassword.setText(null);
 							tfUserName.requestFocus();

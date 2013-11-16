@@ -21,7 +21,7 @@ public class Client {
 		boolean answer = false;
 		String serverAnswer = null;
 		try {
-			clientSocket.Escribir("USER " + userName + '\n');
+			clientSocket.Escribir("USUARIO " + userName + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -36,6 +36,24 @@ public class Client {
 		
 	}
 	
+	public boolean validatePassword(String password) {
+		boolean answer = false;
+		String serverAnswer = null;
+		try {
+			clientSocket.Escribir("CLAVE " + password + '\n');
+			serverAnswer = clientSocket.Leer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(serverAnswer != null) {
+			if(serverAnswer.contains("OK")) {
+				answer = true;
+			}
+			System.out.println(serverAnswer);
+		}
+		return answer;
+	}
+	
 	public void signOut() {
 		String serverAnswer = null;
 		try {
@@ -45,10 +63,5 @@ public class Client {
 			e.printStackTrace();
 		}
 		System.out.println(serverAnswer);
-	}
-	
-	public static void main(String[] argv) {
-		Client c = new Client("127.0.0.1", 1234);
-		c.validateUserName("Albert Wesker");
 	}
 }
