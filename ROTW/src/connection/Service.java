@@ -21,6 +21,7 @@ public class Service implements Runnable {
 			try {
 				String message = clientSocket.Leer();
 				if(message != null) {
+					System.out.println(message);
 					String[] splitter = message.split(" ");
 					String command = splitter[0];
 					StringBuilder parameter = new StringBuilder();
@@ -60,7 +61,7 @@ public class Service implements Runnable {
 								clientSocket.Escribir("502 ERR La clave es incorrecta.\n");
 							}
 						} else {
-							clientSocket.Escribir("￼503 ERR Falta la clave.\n");
+							clientSocket.Escribir("503 ERR Falta la clave.\n");
 						}
 					} else if(command.equals("SALIR")) {
 						clientSocket.Escribir("318 OK Adios.\n");
