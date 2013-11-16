@@ -59,7 +59,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		super("resources/UmbrellaSignIn.png");
 		
 		this.parent = parent;
-		parent.client = new Client("192.168.1.44", 1234);
+		parent.client = new Client("127.0.0.1", 1234);
 		
 		//Window's components.
 		this.setSize(new Dimension(800, 600));

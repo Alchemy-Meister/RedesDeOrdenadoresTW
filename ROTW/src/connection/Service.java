@@ -15,7 +15,7 @@ public class Service implements Runnable {
 
 	@Override
 	public void run() {
-		while(!exit && clientSocket.isConnected()) {
+		while(!exit) {
 			try {
 				String message = clientSocket.Leer();
 				if(message != null) {
@@ -46,13 +46,11 @@ public class Service implements Runnable {
 						clientSocket.Escribir("318 OK Adios.\n");
 						exit = true;
 					}
+				} else {
+					exit = true;
+					System.out.println("Client disconnected.");
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
