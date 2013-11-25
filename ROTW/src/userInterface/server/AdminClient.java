@@ -27,6 +27,7 @@ public class AdminClient extends JFrame implements ActionListener {
 	private int acceleratorKey;
 	
 	private JMenuItem serverLocator;
+	private JMenuItem closeWindow;
 	
 	public AdminClient() {
 		
@@ -44,19 +45,25 @@ public class AdminClient extends JFrame implements ActionListener {
 		//Window's menu bar.
 		JMenuBar menubar = new JMenuBar();
 		
-		JMenu server = new JMenu("Server");
+		JMenu file = new JMenu("File");
 		
 		serverLocator = new JMenuItem("Switch Server");
-		server.add(serverLocator);
+		closeWindow = new JMenuItem("Close Window");
+		file.add(serverLocator);
+		file.add(closeWindow);
 		
-		menubar.add(server);
+		menubar.add(file);
 		
 		this.setJMenuBar(menubar);
 		
 		serverLocator.setMnemonic(KeyEvent.VK_S);
 		serverLocator.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_S, acceleratorKey));
+		closeWindow.setMnemonic(KeyEvent.VK_W);
+		closeWindow.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_W, acceleratorKey));
 		serverLocator.addActionListener(this);
+		closeWindow.addActionListener(this);
 		//Window's components.
 		Authentication a = new Authentication(this);
 		this.add(a);
@@ -72,7 +79,13 @@ public class AdminClient extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(serverLocator)) {
-			System.out.println("hola");
+			Authentication.pfPassword.setEnabled(false);
+			Authentication.tfUserName.setEnabled(false);
+			Authentication.bSignIn.setEnabled(false);
+			SwitchServerWindow ssw = new SwitchServerWindow();
+			ssw.requestFocus();
+		} else if(e.getSource().equals(closeWindow)) {
+			AdminClient.this.dispose();
 		}
 	}
 }

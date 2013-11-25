@@ -38,12 +38,12 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	
 	private JLabel lUserName = new JLabel("USER");
 	private JLabel lPassword = new JLabel("ACCESS CODE");
-	private JTextField tfUserName = new JTextField(12);
-	private JPasswordField pfPassword = new JPasswordField(12);
+	protected static JTextField tfUserName = new JTextField(12);
+	protected static JPasswordField pfPassword = new JPasswordField(12);
 	private SpinningWheel progress;
 	private JBackgroundedPanel correct;
 	private JBackgroundedPanel error;
-	private JButton bSignIn = new JButton();
+	protected static JButton bSignIn = new JButton();
 	
 	private Shaker shacker;
 	
@@ -59,12 +59,21 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	
 	public Authentication(AdminClient parent) {
 		super("resources/UmbrellaSignIn.png");
-		
 		this.parent = parent;
+		this.parent.setTitle("Authentication");
 		try {
 			parent.client = new Client("127.0.0.1", 1234);
 		} catch (ConnectException e) {
-			
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				
+				public void run() {
+					pfPassword.setEnabled(false);
+					tfUserName.setEnabled(false);
+					bSignIn.setEnabled(false);
+					SwitchServerWindow ssw = new SwitchServerWindow();
+					ssw.requestFocus();
+				}
+			});
 		}
 		
 		//Window's components.
@@ -76,7 +85,6 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		authPanel.setBounds(425, 200, 300, 58);
 		authPanel.setLayout(null);
 		
-		authPanel.setBackground(Color.GRAY);
 		authPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 10, 11), 1));
 		
 		shacker = new Shaker(authPanel);
