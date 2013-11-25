@@ -256,15 +256,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(!AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
-							tfUserName.setText(null);
-							pfPassword.setText(null);
-							tfUserName.requestFocus();
-							if(userChecker != null && userChecker.isAlive()) {
-								userChecker.interrupt();
-							}
-							shacker.shakeComponent(authPanel);
-						} else {
+						if(AdminClient.client != null && AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
 							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
 									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
 											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 350);
@@ -279,6 +271,14 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 								Thread.sleep(0);
 							}
 							parent.remove(Authentication.this);
+						} else {
+							tfUserName.setText(null);
+							pfPassword.setText(null);
+							tfUserName.requestFocus();
+							if(userChecker != null && userChecker.isAlive()) {
+								userChecker.interrupt();
+							}
+							shacker.shakeComponent(authPanel);
 						}
 					} catch (InterruptedException e) {
 					

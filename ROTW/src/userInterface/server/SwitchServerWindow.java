@@ -84,8 +84,7 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 		{
 			if(iptf.getText().equals(""))
 			{
-				JOptionPane.showMessageDialog(SwitchServerWindow.this, "IP field can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
-				System.out.println("Blank ip");
+				JOptionPane.showMessageDialog(SwitchServerWindow.this, "The IP can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
 			}else
 			{
 				try {
