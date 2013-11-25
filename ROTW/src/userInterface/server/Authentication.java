@@ -62,7 +62,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		this.parent = parent;
 		this.parent.setTitle("Authentication");
 		try {
-			parent.client = new Client("127.0.0.1", 1234);
+			AdminClient.client = new Client("127.0.0.1", 1234);
 		} catch (ConnectException e) {
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				
@@ -174,7 +174,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 					
 							@Override
 							public void run() {
-								if(parent.client != null && parent.client.validateUserName(tfUserName.getText())) {
+								if(AdminClient.client != null && AdminClient.client.validateUserName(tfUserName.getText())) {
 									if(error.isVisible()) {
 										error.setVisible(false);
 									}
@@ -256,7 +256,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(!parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
+						if(!AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
 							tfUserName.setText(null);
 							pfPassword.setText(null);
 							tfUserName.requestFocus();

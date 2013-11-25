@@ -10,12 +10,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.ConnectException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import connection.Client;
 
 @SuppressWarnings("serial")
 public class SwitchServerWindow extends JDialog implements ActionListener 
@@ -81,11 +84,15 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 		{
 			if(iptf.getText().equals(""))
 			{
-				JOptionPane.showMessageDialog(null, "Ip field can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(SwitchServerWindow.this, "IP field can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
 				System.out.println("Blank ip");
 			}else
 			{
-				System.out.println(iptf.getText());
+				try {
+					AdminClient.client = new Client(iptf.getText(), 1234);
+				} catch (ConnectException e1) {
+					JOptionPane.showMessageDialog(SwitchServerWindow.this, "Couldn't connect with the server.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 		

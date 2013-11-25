@@ -22,7 +22,7 @@ public class AdminClient extends JFrame implements ActionListener {
 	private int height = 600;
 	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	private int deviceHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-	public Client client;
+	public static Client client;
 	
 	private int acceleratorKey;
 	
