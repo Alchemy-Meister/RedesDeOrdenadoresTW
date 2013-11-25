@@ -248,7 +248,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(parent != null || !parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
+						if(!parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
 							tfUserName.setText(null);
 							pfPassword.setText(null);
 							tfUserName.requestFocus();

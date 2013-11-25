@@ -1,8 +1,10 @@
 package connection;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import dataBase.DatabaseController;
+import dataBase.Sensor;
 
 public class Service implements Runnable {
 	
@@ -68,6 +70,11 @@ public class Service implements Runnable {
 						exit = true;
 					} else if(command.equals("LISTSENSOR")) {
 						clientSocket.Escribir("222 OK Lista de sensores.\n");
+						ArrayList<Sensor> sensorList = DatabaseController.getSensorList(userName);
+						for(int i = 0; i < sensorList.size(); i++) {
+							clientSocket.Escribir(sensorList.get(i).toString()  + '\n');
+						}
+						clientSocket.Escribir("322 OK Lista finalizada.\n");
 						//TODO Coger de la base de datos la lista de todos los sensores.
 					} else if(command.equals("HISTORICO")) {
 						if(parameter.toString().equals("")) {

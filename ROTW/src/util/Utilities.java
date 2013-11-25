@@ -47,4 +47,18 @@ public class Utilities {
     	}
     	return string.toString();
     }
+    
+    public static boolean intToBoolean(int bool) {
+    	if(bool == 0) 
+    		return false;
+    	else
+    		return true;
+    }
+    
+    public static String booleanToString(boolean bool) {
+    	if(bool)
+    		return "ON";
+    	else
+    		return "OFF";
+    }
 }

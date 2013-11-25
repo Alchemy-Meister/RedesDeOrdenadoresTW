@@ -3,6 +3,7 @@ package connection;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Client {
 	
@@ -67,13 +68,21 @@ public class Client {
 	}
 	
 	public void getSensorList() {
+		ArrayList<String> sensorList = new ArrayList<String>();
 		try {
 			clientSocket.Escribir("LISTSENSOR\n");
 			serverAnswer = clientSocket.Leer();
+			sensorList.add(serverAnswer);
+			while(!serverAnswer.contains("322")) {
+				serverAnswer = clientSocket.Leer();
+				sensorList.add(serverAnswer);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(serverAnswer);
+		for(int i = 0; i < sensorList.size(); i++) {
+			System.out.println(sensorList.get(i));
+		}
 	}
 	
 	public void getSensorRecord(String sensor_id) {
@@ -163,8 +172,9 @@ public class Client {
 		} catch (ConnectException e) {
 			
 		}
-		//c.getSensorList();
-		//c.getPhoto();
+		if(c != null) {
+			c.getSensorList();
+		}
 	}
 	
 }

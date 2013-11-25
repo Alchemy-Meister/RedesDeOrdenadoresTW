@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
+import util.Utilities;
 
 public class DatabaseController {
 	
@@ -63,5 +66,25 @@ public class DatabaseController {
 				e.printStackTrace();
 			}
 			return correct;
+		}
+		
+		public static ArrayList<Sensor> getSensorList(String userName) {
+			ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
+			Connection connection = connectToDatabase();
+			PreparedStatement statement;
+			try {
+				statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s, USER u where u.ID = USER_ID AND USERNAME = ?;");
+				statement.setString(1, userName);
+				ResultSet result = statement.executeQuery();
+				while(result.next()) {
+					sensorList.add(new Sensor(result.getInt("ID"), result.getString("NAME"), Utilities.intToBoolean(result.getInt("STATE"))));
+				}
+				for(int i = 0; i < sensorList.size(); i++) {
+					System.out.println(sensorList.get(i).toString());
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return sensorList;
 		}
 }
