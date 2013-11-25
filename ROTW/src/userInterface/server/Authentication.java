@@ -15,6 +15,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.net.ConnectException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -54,11 +55,17 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	protected Animate panelSigninA;
 	protected Animate panelMenuA;
 	
+	private Object lastFocused = null;
+	
 	public Authentication(AdminClient parent) {
 		super("resources/UmbrellaSignIn.png");
 		
 		this.parent = parent;
-		parent.client = new Client("127.0.0.1", 1234);
+		try {
+			parent.client = new Client("127.0.0.1", 1234);
+		} catch (ConnectException e) {
+			
+		}
 		
 		//Window's components.
 		this.setSize(new Dimension(800, 600));
@@ -124,6 +131,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		
 		//Component's listeners
 		tfUserName.addFocusListener(this);
+		pfPassword.addFocusListener(this);
 		tfUserName.getDocument().addDocumentListener(this);
 		bSignIn.addActionListener(this);
 		pfPassword.addKeyListener(this);
@@ -133,34 +141,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 
 	@Override
 	public void focusLost(FocusEvent e) {
-		if(e.getSource().equals(tfUserName)) {
-			
-			if(tfUserName.getText().length() >= 0) {
-				progress.setVisible(true);
-				if(userChecker == null || !userChecker.isAlive()) {
-					userChecker = new Thread(new Runnable() {	
-				
-						@Override
-						public void run() {
-							if(parent.client.validateUserName(tfUserName.getText())) {
-								if(error.isVisible()) {
-									error.setVisible(false);
-								}
-								correct.setVisible(true);
-							} else {
-								if(correct.isVisible()) {
-									correct.setVisible(false);
-								}
-								error.setVisible(true);
-							}
-							progress.setVisible(false);
-							progress.repaint();
-						}
-					});
-				}
-				userChecker.start();
-			}
-		}
+		lastFocused = e.getSource();
 	}
 	
 	@Override
@@ -175,6 +156,34 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				correct.setVisible(false);
 			} else if(error.isVisible()) {
 				error.setVisible(false);
+			}
+		} else if(e.getSource().equals(pfPassword)) {
+			if(lastFocused == tfUserName) {
+				if(tfUserName.getText().length() >= 0) {
+					progress.setVisible(true);
+					if(userChecker == null || !userChecker.isAlive()) {
+						userChecker = new Thread(new Runnable() {	
+					
+							@Override
+							public void run() {
+								if(parent.client != null && parent.client.validateUserName(tfUserName.getText())) {
+									if(error.isVisible()) {
+										error.setVisible(false);
+									}
+									correct.setVisible(true);
+								} else {
+									if(correct.isVisible()) {
+										correct.setVisible(false);
+									}
+									error.setVisible(true);
+								}
+								progress.setVisible(false);
+								progress.repaint();
+							}
+						});
+					}
+					userChecker.start();
+				}
 			}
 		}
 	}
@@ -239,11 +248,11 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(!parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
+						if(parent != null || !parent.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
 							tfUserName.setText(null);
 							pfPassword.setText(null);
 							tfUserName.requestFocus();
-							if(userChecker.isAlive()) {
+							if(userChecker != null && userChecker.isAlive()) {
 								userChecker.interrupt();
 							}
 							shacker.shakeComponent(authPanel);
