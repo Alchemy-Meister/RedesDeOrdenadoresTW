@@ -45,10 +45,12 @@ public class Menu extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(signout)) {
-			parent.client.signOut();
+			AdminClient.client.signOut();
+			AdminClient.client = null;
 			Authentication authentication = new Authentication(parent);
 			authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
 			parent.add(authentication);
+			parent.validate();
 			authPanelA = new Animate(authentication, authentication.getBounds(), Menu.this.getBounds(), 350);
 			menuPanelA = new Animate(Menu.this, Menu.this.getBounds(), new Rectangle(Menu.this.getX() + Menu.this.getWidth(),
 					Menu.this.getY(), Menu.this.getWidth(), Menu.this.getHeight()), 350);

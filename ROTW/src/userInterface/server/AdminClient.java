@@ -32,8 +32,8 @@ public class AdminClient extends JFrame implements ActionListener {
 	public AdminClient() {
 		
 		this.getContentPane().setPreferredSize(new Dimension(width, height));
-		this.getContentPane().setLayout(null);
-		this.getContentPane().setBackground(Color.BLACK);
+		this.setLayout(null);
+		this.setBackground(Color.BLACK);
 		
 		if(System.getProperty("os.name").startsWith("Mac")) {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -65,8 +65,7 @@ public class AdminClient extends JFrame implements ActionListener {
 		serverLocator.addActionListener(this);
 		closeWindow.addActionListener(this);
 		//Window's components.
-		Authentication a = new Authentication(this);
-		this.add(a);
+		this.add(new Authentication(this));
 		
 		//Window's Properties.
 		this.pack();
@@ -79,9 +78,9 @@ public class AdminClient extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(serverLocator)) {
-			Authentication.pfPassword.setEnabled(false);
-			Authentication.tfUserName.setEnabled(false);
-			Authentication.bSignIn.setEnabled(false);
+			if(AdminClient.client != null) {
+				AdminClient.client.signOut();
+			}
 			SwitchServerWindow ssw = new SwitchServerWindow();
 			ssw.requestFocus();
 		} else if(e.getSource().equals(closeWindow)) {

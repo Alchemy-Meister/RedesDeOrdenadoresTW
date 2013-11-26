@@ -173,6 +173,7 @@ public class Client {
 			
 		}
 		if(c != null) {
+			c.validateUserName("Albert Wesker");
 			c.getSensorList();
 		}
 	}

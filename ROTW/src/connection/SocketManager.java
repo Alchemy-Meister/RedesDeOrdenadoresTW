@@ -16,7 +16,7 @@ import java.io.*;
  * @version 1.0
  */
 
-public class SocketManager {
+public class SocketManager extends Socket {
     private Socket mySocket;
 
     private DataOutputStream bufferEscritura;
@@ -34,7 +34,9 @@ public class SocketManager {
      * @throws IOException
      */
     public SocketManager(InetAddress address, int port) throws IOException {
-        mySocket = new Socket(address, port);
+        mySocket = new Socket();
+        mySocket.connect(new InetSocketAddress(address, port), 100);
+        mySocket.setSoTimeout(100);
         InicializaStreams();
     }
 

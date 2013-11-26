@@ -38,12 +38,12 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 	
 	private JLabel lUserName = new JLabel("USER");
 	private JLabel lPassword = new JLabel("ACCESS CODE");
-	protected static JTextField tfUserName = new JTextField(12);
-	protected static JPasswordField pfPassword = new JPasswordField(12);
+	protected JTextField tfUserName = new JTextField(12);
+	protected JPasswordField pfPassword = new JPasswordField(12);
 	private SpinningWheel progress;
 	private JBackgroundedPanel correct;
 	private JBackgroundedPanel error;
-	protected static JButton bSignIn = new JButton();
+	protected JButton bSignIn = new JButton();
 	
 	private Shaker shacker;
 	
@@ -61,21 +61,22 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		super("resources/UmbrellaSignIn.png");
 		this.parent = parent;
 		this.parent.setTitle("Authentication");
-		try {
-			AdminClient.client = new Client("127.0.0.1", 1234);
-		} catch (ConnectException e) {
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				
-				public void run() {
-					pfPassword.setEnabled(false);
-					tfUserName.setEnabled(false);
-					bSignIn.setEnabled(false);
-					SwitchServerWindow ssw = new SwitchServerWindow();
-					ssw.requestFocus();
-				}
-			});
+		if(AdminClient.client == null) {
+			try {
+				AdminClient.client = new Client("127.0.0.1", 1234);
+			} catch (ConnectException e) {
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					
+					public void run() {
+						pfPassword.setEnabled(false);
+						tfUserName.setEnabled(false);
+						bSignIn.setEnabled(false);
+						SwitchServerWindow ssw = new SwitchServerWindow();
+						ssw.requestFocus();
+					}
+				});
+			}
 		}
-		
 		//Window's components.
 		this.setSize(new Dimension(800, 600));
 		this.setLayout(null);
@@ -271,6 +272,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 								Thread.sleep(0);
 							}
 							parent.remove(Authentication.this);
+							parent.validate();
 						} else {
 							tfUserName.setText(null);
 							pfPassword.setText(null);

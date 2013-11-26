@@ -66,10 +66,6 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 
             @Override
             public void windowClosing(WindowEvent e) {
-            	Authentication.bSignIn.setEnabled(true);
-                Authentication.pfPassword.setEnabled(true);
-                Authentication.tfUserName.setEnabled(true);
-                Authentication.tfUserName.requestFocusInWindow();
                 SwitchServerWindow.this.dispose();
             }
         });
@@ -79,7 +75,7 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		
+		boolean correct = false;
 		if(e.getSource().equals(connectb))
 		{
 			if(iptf.getText().equals(""))
@@ -89,9 +85,13 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 			{
 				try {
 					AdminClient.client = new Client(iptf.getText(), 1234);
+					correct = true;
 				} catch (ConnectException e1) {
 					JOptionPane.showMessageDialog(SwitchServerWindow.this, "Couldn't connect with the server.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
+			}
+			if(correct) {
+				SwitchServerWindow.this.dispose();
 			}
 		}
 		
