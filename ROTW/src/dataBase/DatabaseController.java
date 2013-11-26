@@ -11,7 +11,7 @@ import util.Utilities;
 
 public class DatabaseController {
 	
-	private static Connection connectToDatabase() {
+	private static synchronized Connection connectToDatabase() {
 		 try {
              //Loads the driver.
              Class.forName("org.sqlite.JDBC").newInstance();
@@ -29,7 +29,7 @@ public class DatabaseController {
      return null;
 	}
 	
-	public static boolean validateUserName(String userName) throws InterruptedException {
+	public static synchronized boolean validateUserName(String userName) throws InterruptedException {
 		Boolean correct = false;
 		Connection connection = connectToDatabase();
 		try {
@@ -47,7 +47,7 @@ public class DatabaseController {
 		}
 		return correct;
 	}
-		public static boolean validateUser(String userName, String password) throws InterruptedException {
+		public static synchronized boolean validateUser(String userName, String password) throws InterruptedException {
 			Thread.sleep(1000);
 			Boolean correct = false;
 			Connection connection = connectToDatabase();
@@ -68,7 +68,7 @@ public class DatabaseController {
 			return correct;
 		}
 		
-		public static ArrayList<Sensor> getSensorList(String userName) {
+		public static synchronized ArrayList<Sensor> getSensorList(String userName) {
 			ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
 			Connection connection = connectToDatabase();
 			PreparedStatement statement;

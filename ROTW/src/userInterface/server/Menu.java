@@ -4,13 +4,14 @@ import graphicInterface.Animate;
 import graphicInterface.RotatingComponent;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import util.Utilities;
 
 @SuppressWarnings("serial")
 public class Menu extends JPanel implements ActionListener {
@@ -35,6 +36,7 @@ public class Menu extends JPanel implements ActionListener {
 		signout.setBounds(0, 100, 100, 25);
 		
 		AdminClient.serverLocator.setEnabled(false);
+		AdminClient.signout.setEnabled(true);
 		
 		this.add(rc);
 		this.add(label);
@@ -51,27 +53,9 @@ public class Menu extends JPanel implements ActionListener {
 			AdminClient.client = null;
 			Authentication authentication = new Authentication(parent);
 			authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
-			parent.add(authentication);
+			parent.getContentPane().add(authentication, 0);
+			Utilities.transitionEffect(Menu.this, authentication, parent, true);
 			parent.validate();
-			authPanelA = new Animate(authentication, authentication.getBounds(), Menu.this.getBounds(), 350);
-			menuPanelA = new Animate(Menu.this, Menu.this.getBounds(), new Rectangle(Menu.this.getX() + Menu.this.getWidth(),
-					Menu.this.getY(), Menu.this.getWidth(), Menu.this.getHeight()), 350);
-			authPanelA.start();
-			menuPanelA.start();
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					while(!authPanelA.hasFinished()) {
-						try {
-							Thread.sleep(0);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					parent.remove(Menu.this);
-				}
-			}).start();
 		}
 	}
 }

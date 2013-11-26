@@ -48,8 +48,8 @@ public class SocketManager extends Socket {
      */
     public SocketManager(String host, int port) throws IOException {
     	mySocket = new Socket();
-        mySocket.connect(new InetSocketAddress(host, port), 10000);
-        mySocket.setSoTimeout(10000);
+        mySocket.connect(new InetSocketAddress(host, port), 5000);
+        mySocket.setSoTimeout(5000);
         InicializaStreams();
     }
 

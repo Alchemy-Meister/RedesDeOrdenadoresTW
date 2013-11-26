@@ -11,8 +11,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import util.Utilities;
 import connection.Client;
 
 @SuppressWarnings("serial")
@@ -28,6 +30,7 @@ public class AdminClient extends JFrame implements ActionListener {
 	
 	protected static JMenuItem serverLocator;
 	private JMenuItem closeWindow;
+	protected static JMenuItem signout;
 	
 	public AdminClient() {
 		
@@ -46,16 +49,27 @@ public class AdminClient extends JFrame implements ActionListener {
 		JMenuBar menubar = new JMenuBar();
 		
 		JMenu file = new JMenu("File");
+		JMenu server = new JMenu("Server");
 		
 		serverLocator = new JMenuItem("Switch Server");
 		closeWindow = new JMenuItem("Close Window");
-		file.add(serverLocator);
+		signout = new JMenuItem("Sign Out");
+		signout.setEnabled(false);
+		
 		file.add(closeWindow);
 		
+		server.add(serverLocator);
+		server.add(signout);
+		
 		menubar.add(file);
+		menubar.add(server);
 		
 		this.setJMenuBar(menubar);
 		
+		signout.setMnemonic(KeyEvent.VK_E);
+		signout.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_E, acceleratorKey));
+		signout.addActionListener(this);
 		serverLocator.setMnemonic(KeyEvent.VK_S);
 		serverLocator.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_S, acceleratorKey));
@@ -65,7 +79,7 @@ public class AdminClient extends JFrame implements ActionListener {
 		serverLocator.addActionListener(this);
 		closeWindow.addActionListener(this);
 		//Window's components.
-		this.add(new Authentication(this));
+		this.add(new Authentication(this), 0);
 		
 		//Window's Properties.
 		this.pack();
@@ -85,6 +99,13 @@ public class AdminClient extends JFrame implements ActionListener {
 			ssw.requestFocus();
 		} else if(e.getSource().equals(closeWindow)) {
 			AdminClient.this.dispose();
+		} else if(e.getSource().equals(signout)) {
+			AdminClient.signout.setEnabled(false);
+			JPanel from = (JPanel) AdminClient.this.getContentPane().getComponent(0);
+			JPanel to = new Authentication(AdminClient.this);
+			to.setLocation(from.getX() - from.getWidth(), from.getY());
+			AdminClient.this.getContentPane().add(to, 0);
+			Utilities.transitionEffect(from, to, AdminClient.this, true);
 		}
 	}
 }

@@ -261,7 +261,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 350);
 							Menu menu = new Menu(parent);
 							menu.setLocation(Authentication.this.getX() + Authentication.this.getWidth(), Authentication.this.getY());
-							parent.add(menu);
+							parent.getContentPane().add(menu, 0);
 							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 350);
 							panelMenuA.start();
 							panelSigninA.start();
@@ -270,7 +270,6 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 								Thread.sleep(0);
 							}
 							parent.remove(Authentication.this);
-							parent.validate();
 						} else {
 							tfUserName.setText(null);
 							pfPassword.setText(null);

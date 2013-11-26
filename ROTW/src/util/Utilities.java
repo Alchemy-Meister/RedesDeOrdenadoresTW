@@ -1,10 +1,15 @@
 package util;
 
+import graphicInterface.Animate;
+
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class Utilities {
 	
@@ -60,5 +65,38 @@ public class Utilities {
     		return "ON";
     	else
     		return "OFF";
+    }
+    
+    public static void transitionEffect(final JPanel from, JPanel to, final JFrame parent, boolean rightTransition) {
+    	final Animate toPanel = new Animate(to, to.getBounds(), from.getBounds(), 350);
+    	Animate fromPanel;
+    	if(rightTransition) {
+    	fromPanel = new Animate(from, from.getBounds(), new Rectangle(from.getX() + from.getWidth(),
+    			from.getY(), from.getWidth(), from.getHeight()), 350);
+    	} else {
+    		fromPanel = new Animate(from, from.getBounds(), new Rectangle(from.getX() - from.getWidth(),
+        			from.getY(), from.getWidth(), from.getHeight()), 350);
+    	}
+    	if(rightTransition) {
+    		toPanel.start();
+    		fromPanel.start();
+    	} else {
+    		fromPanel.start();
+    		toPanel.start();
+    	}
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(!toPanel.hasFinished()) {
+					try {
+						Thread.sleep(0);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				parent.remove(from);
+			}
+		}).start();
     }
 }

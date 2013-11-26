@@ -39,7 +39,6 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 	
 	public SwitchServerWindow()
 	{
-		
 		//Window's components.
 		GradientPanel gp = new GradientPanel(new Color(173, 173, 173), new Color(78, 78, 78));
 		gp.setPreferredSize(new Dimension(width, height));
