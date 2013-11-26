@@ -2,6 +2,7 @@ package userInterface.server;
 
 import graphicInterface.GradientPanel;
 import graphicInterface.HintTextField;
+import graphicInterface.SpinningWheel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.ConnectException;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,8 +31,11 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 	private int height = 100;
 	
 	private JButton connectb = new JButton("Connect");
-	protected static HintTextField iptf = new HintTextField("192.168.1.155");
+	protected HintTextField iptf = new HintTextField("192.168.1.155");
 	private JLabel ipLabel = new JLabel("IP ADDRESS:");
+	private SpinningWheel sp;
+	
+	private Thread connect;
 	
 	public SwitchServerWindow()
 	{
@@ -41,15 +45,16 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 		gp.setPreferredSize(new Dimension(width, height));
 		gp.setLayout(null);
 		ipLabel.setBounds(width / 2 - (83 + 145) / 2, height / 2 - (25 + 5 + 25) / 2, 83, 25);
-		//ipLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		iptf.setBounds(ipLabel.getX() + ipLabel.getWidth(), ipLabel.getY() + 1, 145, ipLabel.getHeight() - 3);
 		iptf.setBorder(BorderFactory.createLineBorder(new Color(123, 0, 1), 2));
 		connectb.setBounds(width / 2 - 100 / 2, ipLabel.getY() + ipLabel.getHeight() + 10, 100, 25);
-		
+		sp = new SpinningWheel(width / 2 - 25/2, connectb.getY(), 25, 55);
+		sp.setVisible(false);
 		
 		gp.add(ipLabel);
 		gp.add(iptf);
 		gp.add(connectb);
+		gp.add(sp);
 		
 		//Window's settings.
 		this.setLocation(deviceWidth / 2 - width / 2, DeviceHeight / 2 - height / 2);
@@ -66,6 +71,11 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 
             @Override
             public void windowClosing(WindowEvent e) {
+                if(connect != null && connect.isAlive()) {
+                	connect.interrupt();
+                	connect = null;
+                }
+                AdminClient.client = null;
                 SwitchServerWindow.this.dispose();
             }
         });
@@ -75,7 +85,6 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		boolean correct = false;
 		if(e.getSource().equals(connectb))
 		{
 			if(iptf.getText().equals(""))
@@ -83,15 +92,32 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 				JOptionPane.showMessageDialog(SwitchServerWindow.this, "The IP can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
 			}else
 			{
-				try {
-					AdminClient.client = new Client(iptf.getText(), 1234);
-					correct = true;
-				} catch (ConnectException e1) {
-					JOptionPane.showMessageDialog(SwitchServerWindow.this, "Couldn't connect with the server.", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			if(correct) {
-				SwitchServerWindow.this.dispose();
+				connect = new Thread( new Runnable() {
+					
+					@Override
+					public void run() {
+						boolean correct = false;
+						connectb.setVisible(false);
+						connectb.repaint();
+						sp.setVisible(true);
+						try {
+							iptf.setEnabled(false);
+							AdminClient.client = new Client(iptf.getText(), 1234);
+							correct = true;
+						} catch (IOException e1) {
+							iptf.setEnabled(true);
+							iptf.setText("");
+							sp.setVisible(false);
+							AdminClient.client = null;
+							connectb.setVisible(true);
+							JOptionPane.showMessageDialog(SwitchServerWindow.this, "Couldn't connect with the server.", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						if(correct) {
+							SwitchServerWindow.this.dispose();
+						}
+					}
+				});
+				connect.start();
 			}
 		}
 		

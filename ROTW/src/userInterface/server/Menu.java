@@ -34,6 +34,8 @@ public class Menu extends JPanel implements ActionListener {
 		label.setBounds(58, 25, 150, 23);
 		signout.setBounds(0, 100, 100, 25);
 		
+		AdminClient.serverLocator.setEnabled(false);
+		
 		this.add(rc);
 		this.add(label);
 		this.add(signout);

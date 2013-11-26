@@ -15,7 +15,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.net.ConnectException;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -64,15 +64,11 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		if(AdminClient.client == null) {
 			try {
 				AdminClient.client = new Client("127.0.0.1", 1234);
-			} catch (ConnectException e) {
+			}catch (IOException e) {
 				javax.swing.SwingUtilities.invokeLater(new Runnable() {
 					
 					public void run() {
-						pfPassword.setEnabled(false);
-						tfUserName.setEnabled(false);
-						bSignIn.setEnabled(false);
-						SwitchServerWindow ssw = new SwitchServerWindow();
-						ssw.requestFocus();
+						new SwitchServerWindow();
 					}
 				});
 			}
@@ -87,6 +83,8 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 		authPanel.setLayout(null);
 		
 		authPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 10, 11), 1));
+		
+		AdminClient.serverLocator.setEnabled(true);
 		
 		shacker = new Shaker(authPanel);
 		

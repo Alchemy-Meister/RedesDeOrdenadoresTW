@@ -1,8 +1,6 @@
 package connection;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Client {
@@ -10,15 +8,11 @@ public class Client {
 	private SocketManager clientSocket;
 	private String serverAnswer = null;
 	
-	public Client(String address, int port) throws ConnectException {
+	public Client(String address, int port) throws IOException {
 		try {
 			clientSocket = new SocketManager(address, port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch(ConnectException e) {
-			throw new ConnectException();
 		}catch (IOException e) {
-			e.printStackTrace();
+			throw new IOException();
 		}
 	}
 	
@@ -169,7 +163,7 @@ public class Client {
 		Client c = null;
 		try {
 			c = new Client("127.0.0.1", 1234);
-		} catch (ConnectException e) {
+		} catch (IOException e) {
 			
 		}
 		if(c != null) {

@@ -35,8 +35,8 @@ public class SocketManager extends Socket {
      */
     public SocketManager(InetAddress address, int port) throws IOException {
         mySocket = new Socket();
-        mySocket.connect(new InetSocketAddress(address, port), 100);
-        mySocket.setSoTimeout(100);
+        mySocket.connect(new InetSocketAddress(address, port), 5000);
+        mySocket.setSoTimeout(5000);
         InicializaStreams();
     }
 
@@ -47,7 +47,9 @@ public class SocketManager extends Socket {
      * @throws IOException
      */
     public SocketManager(String host, int port) throws IOException {
-        mySocket = new Socket(host, port);
+    	mySocket = new Socket();
+        mySocket.connect(new InetSocketAddress(host, port), 10000);
+        mySocket.setSoTimeout(10000);
         InicializaStreams();
     }
 

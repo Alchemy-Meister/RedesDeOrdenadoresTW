@@ -26,7 +26,7 @@ public class AdminClient extends JFrame implements ActionListener {
 	
 	private int acceleratorKey;
 	
-	private JMenuItem serverLocator;
+	protected static JMenuItem serverLocator;
 	private JMenuItem closeWindow;
 	
 	public AdminClient() {
