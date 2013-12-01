@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -98,5 +99,9 @@ public class Utilities {
 				parent.remove(from);
 			}
 		}).start();
+    }
+    
+    public static float randomFloat(float min, float max) {
+    	return new Random().nextFloat() * (max - min) + min;
     }
 }

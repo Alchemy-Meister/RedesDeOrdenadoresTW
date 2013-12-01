@@ -36,7 +36,6 @@ public class SocketManager extends Socket {
     public SocketManager(InetAddress address, int port) throws IOException {
         mySocket = new Socket();
         mySocket.connect(new InetSocketAddress(address, port), 5000);
-        mySocket.setSoTimeout(5000);
         InicializaStreams();
     }
 
@@ -49,7 +48,6 @@ public class SocketManager extends Socket {
     public SocketManager(String host, int port) throws IOException {
     	mySocket = new Socket();
         mySocket.connect(new InetSocketAddress(host, port), 5000);
-        mySocket.setSoTimeout(5000);
         InicializaStreams();
     }
 
@@ -88,4 +86,15 @@ public class SocketManager extends Socket {
     public void Escribir(byte[] buffer, int bytes) throws IOException {
         bufferEscritura.write(buffer, 0, bytes);
     }
+    
+    public void EscribirBytes(FileInputStream f) throws IOException {
+		String s=f.available()+"";
+		Escribir(s+'\n');
+		byte[] buffer = new byte[1024];
+		int bytes = 0;
+		while ((bytes = f.read(buffer)) != -1) {
+			Escribir(buffer, bytes);
+		}
+		bufferEscritura.flush();
+	}
 }

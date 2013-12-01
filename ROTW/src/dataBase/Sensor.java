@@ -39,6 +39,5 @@ public class Sensor {
 	
 	public String toString() {
 		return this.getId() + " " + this.getName() + " " + Utilities.booleanToString(this.isEnabled());
-	}
-	
+	}	
 }

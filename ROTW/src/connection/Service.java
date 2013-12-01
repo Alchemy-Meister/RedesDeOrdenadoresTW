@@ -1,9 +1,22 @@
 package connection;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
+import javax.imageio.ImageIO;
+import javax.naming.NoPermissionException;
+
+import com.github.sarxos.webcam.Webcam;
+
+import util.NotFoundException;
+import util.Utilities;
 import dataBase.DatabaseController;
+import dataBase.Record;
 import dataBase.Sensor;
 
 public class Service implements Runnable {
@@ -37,11 +50,7 @@ public class Service implements Runnable {
 					}
 					if(command.equals("USUARIO")) {
 						boolean correct = false;
-						try {
-							correct = DatabaseController.validateUserName(parameter.toString());
-						} catch (InterruptedException e) {
-							
-						}
+						correct = DatabaseController.validateUserName(parameter.toString());
 						if(correct) {
 							userName = parameter.toString();
 							clientSocket.Escribir("301 OK Bienvenido " + parameter.toString() + ".\n");
@@ -52,11 +61,7 @@ public class Service implements Runnable {
 						boolean correct = false;
 						password = parameter.toString();
 						if(!password.equals("")) {	
-							try {
 								correct = DatabaseController.validateUser(userName, password);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
 							if(correct) {
 								clientSocket.Escribir("302 OK Bienvenido al sistema.\n");
 							} else {
@@ -75,47 +80,85 @@ public class Service implements Runnable {
 							clientSocket.Escribir(sensorList.get(i).toString()  + '\n');
 						}
 						clientSocket.Escribir("322 OK Lista finalizada.\n");
-						//TODO Coger de la base de datos la lista de todos los sensores.
 					} else if(command.equals("HISTORICO")) {
 						if(parameter.toString().equals("")) {
 							clientSocket.Escribir("525 ERR Falta parámetro id_sensor.\n");
 						} else {
-							//TODO Coger de la base de datos todos los valores del sensor. Y procesar que el id sensor sea valido.
-							clientSocket.Escribir("524 ERR Sensor desconocido.\n");
+							ArrayList<Record> recordList = new ArrayList<Record>();
+							try {
+								recordList = DatabaseController.getSensorRecord(parameter.toString());
+							} catch (Exception e) {
+								clientSocket.Escribir("524 ERR Sensor desconocido.\n");
+							}
+							for(int i = 0; i < recordList.size(); i++) {
+								clientSocket.Escribir(new String(recordList.get(i).toString().getBytes(), "UTF-8") + "\n");
+							}
 							clientSocket.Escribir("322 OK Lista finalizada.\n");
 							
 							
 						}
 					} else if(command.equals("ON")) {
-						//TODO activar el sensor desde la base de datos si es que existe y no esta ya activado.
-						clientSocket.Escribir("527 ERR Sensor no existe.\n");
-						clientSocket.Escribir("313 OK Sensor activo.\n");
-						clientSocket.Escribir("￼528 ERR Sensor en estado ON.\n");
+						try {
+							DatabaseController.enableSensor(parameter.toString());
+							clientSocket.Escribir("313 OK Sensor activo.\n");
+						} catch (NoPermissionException e) {
+							clientSocket.Escribir("528 ERR Sensor en estado ON.\n");							
+						} catch (NotFoundException e) {
+							clientSocket.Escribir("527 ERR Sensor no existe.\n");
+						}
 					} else if(command.equals("OFF")) {
-						//TODO desactivar el sensor desde la base de datos si es que existe y no esta ya desactivado.
-						clientSocket.Escribir("314 OK Sensor desactivado.\n");
-						clientSocket.Escribir("527 ERR Sensor no existe.\n");
-						clientSocket.Escribir("529 ERR Sensor en estado OFF.\n");
+						try {
+							DatabaseController.disableSensor(parameter.toString());
+							clientSocket.Escribir("314 OK Sensor desactivado.\n");
+						} catch (NoPermissionException e) {
+							clientSocket.Escribir("529 ERR Sensor en estado OFF.\n");							
+						} catch (NotFoundException e) {
+							clientSocket.Escribir("527 ERR Sensor no existe.\n");
+						}
 					} else if(command.equals("ONGPS")) {
-						//TODO check if the gps is already enabled.
-						clientSocket.Escribir("315 OK GPS activado.\n");
-						clientSocket.Escribir("529 ERR GPS en estado ON.\n");
+						try {
+							DatabaseController.enableGPS(userName);
+							clientSocket.Escribir("315 OK GPS activado.\n");
+						} catch (NoPermissionException e) {
+							clientSocket.Escribir("529 ERR GPS en estado ON.\n");
+						}
 					} else if(command.equals("OFFGPS")) {
-						//TODO check if the gps is already disabled.
-						clientSocket.Escribir("316 OK GPS desactivado.\n");
-						clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
+						try {
+							DatabaseController.disableGPS(userName);
+							clientSocket.Escribir("316 OK GPS desactivado.\n");
+						} catch (NoPermissionException e) {
+							clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
+						}
 					} else if(command.equals("GET_VALACT")) {
 						if(parameter.toString().equals("")) {
 							clientSocket.Escribir("525 ERR Falta parámetro id_sensor.\n");
+						} else {
+							try {
+								Sensor sensor = DatabaseController.getSensor(parameter.toString());
+								if(sensor.isEnabled()) {
+									Record record = new Record(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), Utilities.randomFloat(0, 999),  Utilities.randomFloat(0, 59.99f), 
+											 Utilities.randomFloat(0, 59.99f),  Utilities.randomFloat(0, 999),  Utilities.randomFloat(0, 59.99f),
+											 Utilities.randomFloat(0, 59.99f),  Utilities.randomFloat(0, 999), Integer.valueOf(parameter.toString()));
+									DatabaseController.updateRecord(record);
+									clientSocket.Escribir("224 OK "+ record.toString() +"\n");
+								} else {
+									clientSocket.Escribir("￼526 ERR Sensor en OFF.\n");
+								}
+							} catch (NotFoundException e) {
+								clientSocket.Escribir("524 ERR Sensor desconocido.\n");
+							}
 						}
-						//TODO check if the sensor is enabled or if it exists.
-						clientSocket.Escribir("224 OK\n");
-						clientSocket.Escribir("524 ERR Sensor desconocido.\n");
-						clientSocket.Escribir("￼526 ERR Sensor en OFF.\n");
 					} else if(command.equals("GET_FOTO")) {
 						//TODO check if the gps is on
-						String bytes = "lolololololol";
-						clientSocket.Escribir("316 OK " + bytes +  "bytes transmitiendo.\n");
+						Webcam webcam = Webcam.getDefault();
+						webcam.open();
+						BufferedImage image = webcam.getImage();
+						webcam.close();
+						ImageIO.write(image, "PNG", new File("photo.png"));
+						FileInputStream imageFile = new FileInputStream("photo.png");
+						clientSocket.Escribir("316 OK " + imageFile.available() +  " Bytes transmitiendo.\n");
+						clientSocket.EscribirBytes(imageFile);
+						imageFile.close();
 						clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
 					} else if(command.equals("GET_LOC")) {
 						//TODO only after sending a photo.
