@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -22,7 +24,7 @@ import javax.swing.JOptionPane;
 import connection.Client;
 
 @SuppressWarnings("serial")
-public class SwitchServerWindow extends JDialog implements ActionListener 
+public class SwitchServerWindow extends JDialog implements ActionListener, KeyListener 
 {
 
 	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -64,6 +66,7 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 		this.pack();
 		//Window's Listeners.
 		iptf.addActionListener(this);
+		iptf.addKeyListener(this);
 		connectb.addActionListener(this);
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
@@ -86,11 +89,37 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 	{
 		if(e.getSource().equals(connectb))
 		{
-			if(iptf.getText().equals(""))
-			{
-				JOptionPane.showMessageDialog(SwitchServerWindow.this, "The IP can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
-			}else
-			{
+			connectToServer();
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getSource().equals(iptf)) {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				connectToServer();
+			}
+		}
+	}
+	
+	private void connectToServer() {
+		if(iptf.getText().equals(""))
+		{
+			JOptionPane.showMessageDialog(SwitchServerWindow.this, "The IP can't be blank!", "Error", JOptionPane.ERROR_MESSAGE);
+		}else
+		{
+			if(connect == null || !connect.isAlive()) {
 				connect = new Thread( new Runnable() {
 					
 					@Override
@@ -119,6 +148,5 @@ public class SwitchServerWindow extends JDialog implements ActionListener
 				connect.start();
 			}
 		}
-		
 	}
 }

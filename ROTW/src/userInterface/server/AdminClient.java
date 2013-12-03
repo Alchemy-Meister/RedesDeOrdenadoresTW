@@ -94,18 +94,28 @@ public class AdminClient extends JFrame implements ActionListener {
 		if(e.getSource().equals(serverLocator)) {
 			if(AdminClient.client != null) {
 				AdminClient.client.signOut();
+				AdminClient.client = null;
 			}
 			SwitchServerWindow ssw = new SwitchServerWindow();
 			ssw.requestFocus();
 		} else if(e.getSource().equals(closeWindow)) {
 			AdminClient.this.dispose();
 		} else if(e.getSource().equals(signout)) {
-			AdminClient.signout.setEnabled(false);
-			JPanel from = (JPanel) AdminClient.this.getContentPane().getComponent(0);
-			JPanel to = new Authentication(AdminClient.this);
-			to.setLocation(from.getX() - from.getWidth(), from.getY());
-			AdminClient.this.getContentPane().add(to, 0);
-			Utilities.transitionEffect(from, to, AdminClient.this, true);
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					AdminClient.client.signOut();
+					AdminClient.client = null;
+					AdminClient.signout.setEnabled(false);
+					JPanel from = (JPanel) AdminClient.this.getContentPane().getComponent(0);
+					JPanel to = new Authentication(AdminClient.this);
+					to.setLocation(from.getX() - from.getWidth(), from.getY());
+					AdminClient.this.getContentPane().add(to, 0);
+					Utilities.transitionEffect(from, to, AdminClient.this, true);
+					AdminClient.this.getContentPane().validate();
+				}
+			}).start();
 		}
 	}
 }

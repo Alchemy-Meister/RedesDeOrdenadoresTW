@@ -39,5 +39,10 @@ public class Sensor {
 	
 	public String toString() {
 		return this.getId() + " " + this.getName() + " " + Utilities.booleanToString(this.isEnabled());
-	}	
+	}
+	
+	public static Sensor stringToSensor(String sensor) {
+		String[] splitter = sensor.split(" ");
+		return new Sensor(Integer.valueOf(splitter[0]).intValue(), splitter[1], Utilities.stringToBoolean(splitter[2]));
+	}
 }

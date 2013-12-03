@@ -157,8 +157,9 @@ public class Service implements Runnable {
 						ImageIO.write(image, "PNG", new File("photo.png"));
 						FileInputStream imageFile = new FileInputStream("photo.png");
 						clientSocket.Escribir("316 OK " + imageFile.available() +  " Bytes transmitiendo.\n");
-						clientSocket.EscribirBytes(imageFile);
+						
 						imageFile.close();
+						new File("photo.png").delete();
 						clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
 					} else if(command.equals("GET_LOC")) {
 						//TODO only after sending a photo.

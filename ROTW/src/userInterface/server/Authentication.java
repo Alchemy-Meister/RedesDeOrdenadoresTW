@@ -259,7 +259,7 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
 									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
 											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 350);
-							Menu menu = new Menu(parent);
+							Menu menu = new Menu(parent, "resources/Menu.png");
 							menu.setLocation(Authentication.this.getX() + Authentication.this.getWidth(), Authentication.this.getY());
 							parent.getContentPane().add(menu, 0);
 							panelMenuA = new Animate(menu, menu.getBounds(), Authentication.this.getBounds(), 350);

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
+import dataBase.Sensor;
+
 public class Client {
 	
 	private SocketManager clientSocket;
@@ -64,31 +68,34 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public void getSensorList() {
-		ArrayList<String> sensorList = new ArrayList<String>();
+	public ArrayList<Sensor> getSensorList() {
+		ArrayList<String> sensorListString = new ArrayList<String>();
+		ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
 		try {
 			clientSocket.Escribir("LISTSENSOR\n");
 			serverAnswer = clientSocket.Leer();
-			sensorList.add(serverAnswer);
-			while(!serverAnswer.contains("322")) {
+			sensorListString.add(serverAnswer);
+			while(!serverAnswer.contains("322 OK")) {
 				serverAnswer = clientSocket.Leer();
-				sensorList.add(serverAnswer);
+				System.out.println(serverAnswer);
+				sensorListString.add(serverAnswer);
+			}
+			for(int i = 1; i < sensorListString.size() - 1; i++) {
+				sensorList.add(Sensor.stringToSensor(sensorListString.get(i)));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		for(int i = 0; i < sensorList.size(); i++) {
-			System.out.println(sensorList.get(i));
-		}
+		return sensorList;
 	}
 	
-	public void getSensorRecord(String sensor_id) {
+	public ArrayList<String> getSensorRecord(String sensor_id) {
 		ArrayList<String> recordList = new ArrayList<String>();
 		try {
 			clientSocket.Escribir("HISTORICO " + sensor_id + '\n');
 			serverAnswer = clientSocket.Leer();
 			recordList.add(new String(serverAnswer.getBytes(), "UTF-8"));
-			while(!serverAnswer.contains("524") && !serverAnswer.contains("322")) {
+			while(!serverAnswer.contains("524 ERR") && !serverAnswer.contains("322 OK")) {
 				serverAnswer = clientSocket.Leer();
 				recordList.add(new String(serverAnswer.getBytes(), "UTF-8"));
 			}
@@ -98,6 +105,7 @@ public class Client {
 		for(int i = 0; i < recordList.size(); i++) {
 			System.out.println(recordList.get(i));
 		}
+		return recordList;
 	}
 	
 	public void enableSensor(String sensor_id) {
@@ -150,14 +158,16 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public void getPhoto() {
+	public ImageIcon getPhoto() {
+		ImageIcon image = null;
 		try {
 			clientSocket.Escribir("GET_FOTO \n");
 			serverAnswer = clientSocket.Leer();
+			
 		} catch(IOException e) {
 			
 		}
-		System.out.println(serverAnswer);
+		return image;
 	}
 	
 	public void getLocation() {

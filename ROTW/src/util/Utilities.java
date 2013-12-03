@@ -68,6 +68,13 @@ public class Utilities {
     		return "OFF";
     }
     
+    public static boolean stringToBoolean(String bool) {
+    	if(bool.equals("ON"))
+    		return true;
+    	else
+    		return false;
+    }
+    
     public static void transitionEffect(final JPanel from, JPanel to, final JFrame parent, boolean rightTransition) {
     	final Animate toPanel = new Animate(to, to.getBounds(), from.getBounds(), 350);
     	Animate fromPanel;
