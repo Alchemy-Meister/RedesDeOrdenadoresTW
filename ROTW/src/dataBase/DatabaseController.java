@@ -288,4 +288,22 @@ public class DatabaseController {
 				e.printStackTrace();
 			}
 		}
+		
+		public static synchronized ArrayList<User> getUsers() {
+			ArrayList<User> userlist = new ArrayList<User>();
+			Connection connection = connectToDatabase();
+			try {
+				PreparedStatement statement = connection.prepareStatement("Select * from USER;");
+				ResultSet result = statement.executeQuery();
+				while(result.next()) {
+					userlist.add(new User(result.getString("USERNAME"), result.getString("PASSWORD")));
+				}
+				result.close();
+				statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return userlist;
+		}
 }

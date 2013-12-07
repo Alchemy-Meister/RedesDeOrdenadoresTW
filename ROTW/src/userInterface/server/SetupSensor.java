@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.SocketTimeoutException;
 import java.nio.channels.NonReadableChannelException;
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import util.NotFoundException;
+import util.Utilities;
 
 @SuppressWarnings("serial")
 public class SetupSensor extends JDialog implements ActionListener{
@@ -42,8 +44,14 @@ public class SetupSensor extends JDialog implements ActionListener{
 	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	private int deviceHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	
-	public SetupSensor() {
+	AdminClient parent;
+	JPanel menu;
+	
+	public SetupSensor(AdminClient parent, JPanel menu) {
 		super();
+		
+		this.parent = parent;
+		this.menu = menu;
 		
 		JBackgroundedPanel bp = new JBackgroundedPanel("resources/Menu.png");
 		
@@ -149,6 +157,15 @@ public class SetupSensor extends JDialog implements ActionListener{
 						JOptionPane.showMessageDialog(SetupSensor.this, "Selected sensor is already enabled.", "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (NotFoundException e) {
 						JOptionPane.showMessageDialog(SetupSensor.this, "Sensor not found.", "Error", JOptionPane.ERROR_MESSAGE);
+					}catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupSensor.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						SetupSensor.this.dispose();
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(menu.getX() - menu.getWidth(), menu.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(menu, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
 					enabletf.setText("");
 					enableApply.setEnabled(true);
@@ -170,7 +187,17 @@ public class SetupSensor extends JDialog implements ActionListener{
 						JOptionPane.showMessageDialog(SetupSensor.this, "Selected sensor is already disabled.", "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (NotFoundException e) {
 						JOptionPane.showMessageDialog(SetupSensor.this, "Sensor not found.", "Error", JOptionPane.ERROR_MESSAGE);
+					}catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupSensor.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						SetupSensor.this.dispose();
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(menu.getX() - menu.getWidth(), menu.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(menu, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
+					
 					disabletf.setText("");
 					enableApply.setEnabled(true);
 					disableApply.setEnabled(true);
@@ -198,6 +225,15 @@ public class SetupSensor extends JDialog implements ActionListener{
 						JOptionPane.showMessageDialog(SetupSensor.this, "Sensor's identifier is required.", "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (NotFoundException e) {
 						JOptionPane.showMessageDialog(SetupSensor.this, "Sensor not found.", "Error", JOptionPane.ERROR_MESSAGE);
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupSensor.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						SetupSensor.this.dispose();
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(menu.getX() - menu.getWidth(), menu.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(menu, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
 					recordtf.setText("");
 					enableApply.setEnabled(true);
@@ -221,6 +257,15 @@ public class SetupSensor extends JDialog implements ActionListener{
 						JOptionPane.showMessageDialog(SetupSensor.this, "The sensor is off, turn it on before getting it's current value.", "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (NotFoundException e) {
 						JOptionPane.showMessageDialog(SetupSensor.this, "Sensor not found.", "Error", JOptionPane.ERROR_MESSAGE);
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupSensor.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						SetupSensor.this.dispose();
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(menu.getX() - menu.getWidth(), menu.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(menu, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
 					currenttf.setText("");
 					enableApply.setEnabled(true);

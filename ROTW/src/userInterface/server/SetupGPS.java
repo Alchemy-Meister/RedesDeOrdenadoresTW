@@ -5,6 +5,7 @@ import graphicInterface.JBackgroundedPanel;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.SocketTimeoutException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -70,6 +71,15 @@ public class SetupGPS extends JBackgroundedPanel implements ActionListener {
 						JOptionPane.showMessageDialog(SetupGPS.this, "The GPS has been successfully enabled.");
 					} catch(IllegalAccessError e) {
 						JOptionPane.showMessageDialog(SetupGPS.this, "Selected GPS is already enabled.", "Error", JOptionPane.ERROR_MESSAGE);
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupGPS.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(SetupGPS.this.getX() - SetupGPS.this.getWidth(), SetupGPS.this.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(SetupGPS.this, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
 					enableApply.setEnabled(true);
 					disableApply.setEnabled(true);
@@ -86,6 +96,15 @@ public class SetupGPS extends JBackgroundedPanel implements ActionListener {
 						JOptionPane.showMessageDialog(SetupGPS.this, "The GPS has been successfully enabled.");
 					} catch(IllegalAccessError e) {
 						JOptionPane.showMessageDialog(SetupGPS.this, "Selected GPS is already enabled.", "Error", JOptionPane.ERROR_MESSAGE);
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(SetupGPS.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(SetupGPS.this.getX() - SetupGPS.this.getWidth(), SetupGPS.this.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(SetupGPS.this, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
 					}
 					enableApply.setEnabled(true);
 					disableApply.setEnabled(true);

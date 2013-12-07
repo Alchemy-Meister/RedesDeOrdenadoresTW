@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.net.SocketTimeoutException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -92,7 +93,10 @@ public class AdminClient extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(serverLocator)) {
 			if(AdminClient.client != null) {
-				AdminClient.client.signOut();
+				try {
+					AdminClient.client.signOut();
+				} catch (SocketTimeoutException e1) {
+				}
 				AdminClient.client = null;
 			}
 			SwitchServerWindow ssw = new SwitchServerWindow();
@@ -104,7 +108,11 @@ public class AdminClient extends JFrame implements ActionListener {
 				
 				@Override
 				public void run() {
-					AdminClient.client.signOut();
+					try {
+						AdminClient.client.signOut();
+					} catch (SocketTimeoutException e) {
+					
+					}
 					AdminClient.client = null;
 					AdminClient.signout.setEnabled(false);
 					JPanel from = (JPanel) AdminClient.this.getContentPane().getComponent(0);

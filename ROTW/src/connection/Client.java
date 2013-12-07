@@ -2,6 +2,7 @@ package connection;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.nio.channels.NonReadableChannelException;
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ public class Client {
 	public Client(String address, int port) throws ConnectException, IOException {
 		try {
 			clientSocket = new SocketManager(address, port);
+			clientSocket.setSoTimeout(5000);
 		} catch (ConnectException e) {
 			throw new ConnectException();
 		}catch (IOException e) {
@@ -25,13 +27,13 @@ public class Client {
 		}
 	}
 	
-	public boolean validateUserName(String userName) throws IllegalAccessError {
+	public boolean validateUserName(String userName) throws IllegalAccessError, SocketTimeoutException {
 		boolean answer = false;
 		try {
 			clientSocket.Escribir("USUARIO " + userName + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer != null) {
 			if(serverAnswer.contains("OK")) {
@@ -45,13 +47,13 @@ public class Client {
 		
 	}
 	
-	public boolean validatePassword(String password) throws IllegalAccessError {
+	public boolean validatePassword(String password) throws IllegalAccessError, SocketTimeoutException {
 		boolean answer = false;
 		try {
 			clientSocket.Escribir("CLAVE " + password + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer != null) {
 			if(serverAnswer.contains("OK")) {
@@ -64,17 +66,17 @@ public class Client {
 		return answer;
 	}
 	
-	public void signOut() {
+	public void signOut() throws SocketTimeoutException {
 		try {
 			clientSocket.Escribir("SALIR\n");
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		System.out.println(serverAnswer);
 	}
 	
-	public ArrayList<Sensor> getSensorList() {
+	public ArrayList<Sensor> getSensorList() throws SocketTimeoutException {
 		ArrayList<String> sensorListString = new ArrayList<String>();
 		ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
 		try {
@@ -90,12 +92,12 @@ public class Client {
 				sensorList.add(Sensor.stringToSensor(sensorListString.get(i)));
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		return sensorList;
 	}
 	
-	public ArrayList<String> getSensorRecord(String sensor_id) throws NotFoundException, IllegalAccessError {
+	public ArrayList<String> getSensorRecord(String sensor_id) throws NotFoundException, IllegalAccessError, SocketTimeoutException {
 		ArrayList<String> recordList = new ArrayList<String>();
 		try {
 			clientSocket.Escribir("HISTORICO " + sensor_id + '\n');
@@ -112,7 +114,7 @@ public class Client {
 				throw new NotFoundException();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		for(int i = 0; i < recordList.size(); i++) {
 			System.out.println(recordList.get(i));
@@ -120,12 +122,12 @@ public class Client {
 		return recordList;
 	}
 	
-	public void enableSensor(String sensor_id) throws NotFoundException, IllegalAccessError {
+	public void enableSensor(String sensor_id) throws NotFoundException, IllegalAccessError, SocketTimeoutException {
 		try {
 			clientSocket.Escribir("ON " + sensor_id + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer.contains("527 ERR")) {
 			throw new NotFoundException();
@@ -135,12 +137,12 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public void disableSensor(String sensor_id) throws NotFoundException, IllegalAccessError {
+	public void disableSensor(String sensor_id) throws NotFoundException, IllegalAccessError, SocketTimeoutException {
 		try {
 			clientSocket.Escribir("OFF " + sensor_id + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer.contains("527 ERR")) {
 			throw new NotFoundException();
@@ -150,12 +152,12 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public void enableGPS() throws IllegalAccessError {
+	public void enableGPS() throws IllegalAccessError, SocketTimeoutException {
 		try {
 			clientSocket.Escribir("ONGPS\n");
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer.contains("529 ERR")) {
 			throw new IllegalAccessError();
@@ -163,12 +165,12 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public void disableGPS() throws IllegalAccessError {
+	public void disableGPS() throws IllegalAccessError, SocketTimeoutException {
 		try {
 			clientSocket.Escribir("OFFGPS\n");
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer.contains("530 ERR")) {
 			throw new IllegalAccessError();
@@ -176,12 +178,12 @@ public class Client {
 		System.out.println(serverAnswer);
 	}
 	
-	public String currentValue(String sensor_id) throws NotFoundException, IllegalAccessError, NonReadableChannelException {
+	public String currentValue(String sensor_id) throws NotFoundException, IllegalAccessError, NonReadableChannelException, SocketTimeoutException {
 		try {
 			clientSocket.Escribir("GET_VALACT " + sensor_id + '\n');
 			serverAnswer = clientSocket.Leer();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SocketTimeoutException();
 		}
 		if(serverAnswer.contains("525 ERR")) {
 			throw new IllegalAccessError();
@@ -216,52 +218,4 @@ public class Client {
 		}
 		System.out.println(serverAnswer);
 	}
-	
-	public static void main(String[] argv) {
-		Client c = null;
-		try {
-			c = new Client("127.0.0.1", 1234);
-		} catch (Exception e) {
-			
-		}
-		if(c != null) {
-			c.validateUserName("Albert Wesker");
-			c.getSensorList();
-			try {
-				c.getSensorRecord("");
-			} catch (IllegalAccessError e2) {
-				e2.printStackTrace();
-			} catch (NotFoundException e2) {
-				e2.printStackTrace();
-			}
-			try {
-				c.disableSensor("1");
-			} catch (IllegalAccessError e1) {
-				e1.printStackTrace();
-			} catch (NotFoundException e1) {
-				e1.printStackTrace();
-			}
-			try {
-				c.enableSensor("1");
-			} catch (IllegalAccessError e) {
-				e.printStackTrace();
-			} catch (NotFoundException e) {
-				e.printStackTrace();
-			}
-			c.disableGPS();
-			c.enableGPS();
-			try {
-				c.currentValue("2");
-			} catch (IllegalAccessError e) {
-				e.printStackTrace();
-			} catch (NonReadableChannelException e) {
-				e.printStackTrace();
-			} catch (NotFoundException e) {
-				e.printStackTrace();
-			}
-			c.getPhoto();
-			c.signOut();
-		}
-	}
-	
 }

@@ -7,11 +7,13 @@ import graphicInterface.SpinningWheel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import dataBase.Sensor;
@@ -101,17 +103,28 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 				
 				@Override
 				public void run() {
-					ArrayList<Sensor> sensorListArray = AdminClient.client.getSensorList();
-					sensorList.setEnabled(true);
-					setupSensor.setEnabled(true);
-					setupGPS.setEnabled(true);
-					photo.setEnabled(true);
-					signout.setEnabled(true);
-					sp.setVisible(false);
-					rc.setVisible(true);
-					AdminClient.signout.setEnabled(true);
-					SensorList s = new SensorList(sensorListArray);
-					s.requestFocus();
+					ArrayList<Sensor> sensorListArray;
+					try {
+						sensorListArray = AdminClient.client.getSensorList();
+						sensorList.setEnabled(true);
+						setupSensor.setEnabled(true);
+						setupGPS.setEnabled(true);
+						photo.setEnabled(true);
+						signout.setEnabled(true);
+						sp.setVisible(false);
+						rc.setVisible(true);
+						AdminClient.signout.setEnabled(true);
+						SensorList s = new SensorList(sensorListArray);
+						s.requestFocus();
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(Menu.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(Menu.this, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
+					}
 				}
 			}).start();
 		} else if(e.getSource().equals(setupSensor)) {
@@ -132,7 +145,7 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 			sp.setVisible(false);
 			rc.setVisible(true);
 			AdminClient.signout.setEnabled(true);
-			SetupSensor s = new SetupSensor();
+			SetupSensor s = new SetupSensor(parent, this);
 			s.requestFocus();
 		} else if(e.getSource().equals(setupGPS)) {
 			SetupGPS s = new SetupGPS(parent);
@@ -161,19 +174,29 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 				
 				@Override
 				public void run() {
-					AdminClient.client.signOut();
-					AdminClient.client = null;
-					sensorList.setEnabled(true);
-					setupSensor.setEnabled(true);
-					setupGPS.setEnabled(true);
-					photo.setEnabled(true);
-					signout.setEnabled(true);
-					sp.setVisible(false);
-					rc.setVisible(true);
-					Authentication authentication = new Authentication(parent);
-					authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
-					parent.getContentPane().add(authentication, 0);
-					Utilities.transitionEffect(Menu.this, authentication, parent, true);
+					try {
+						AdminClient.client.signOut();
+						AdminClient.client = null;
+						sensorList.setEnabled(true);
+						setupSensor.setEnabled(true);
+						setupGPS.setEnabled(true);
+						photo.setEnabled(true);
+						signout.setEnabled(true);
+						sp.setVisible(false);
+						rc.setVisible(true);
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(Menu.this, authentication, parent, true);
+					} catch (SocketTimeoutException e) {
+						JOptionPane.showMessageDialog(Menu.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+						Authentication authentication = new Authentication(parent);
+						authentication.setLocation(Menu.this.getX() - Menu.this.getWidth(), Menu.this.getY());
+						parent.getContentPane().add(authentication, 0);
+						Utilities.transitionEffect(Menu.this, authentication, parent, true);
+						SwitchServerWindow s = new SwitchServerWindow();
+						s.requestFocus();
+					}
 				}
 			}).start();
 		}

@@ -70,6 +70,10 @@ public class Server {
 		this.userLimit = userLimit;
 	}
 	
+	public ArrayList<Service> getServices() {
+		return serviceList;
+	}
+	
 	public static void main(String[] args) {
 		new Server(1234);
 	}

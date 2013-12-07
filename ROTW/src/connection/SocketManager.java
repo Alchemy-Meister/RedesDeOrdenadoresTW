@@ -86,4 +86,13 @@ public class SocketManager extends Socket {
     public void Escribir(byte[] buffer, int bytes) throws IOException {
         bufferEscritura.write(buffer, 0, bytes);
     }
+    
+    @Override
+    public void setSoTimeout(int timeout) {
+    	try {
+			mySocket.setSoTimeout(timeout);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+    }
 }

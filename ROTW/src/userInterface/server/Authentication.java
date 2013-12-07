@@ -16,6 +16,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -176,9 +177,17 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 							public void run() {
 								boolean granted = false;
 								try {
-								granted = AdminClient.client.validateUserName(tfUserName.getText());
+									if(AdminClient.client != null) {
+										granted = AdminClient.client.validateUserName(tfUserName.getText());
+									}
 								} catch(IllegalAccessError e) {
 									JOptionPane.showMessageDialog(Authentication.this, "The server is full.", "Error", JOptionPane.ERROR_MESSAGE);
+									userChecker.interrupt();
+									SwitchServerWindow s = new SwitchServerWindow();
+									s.requestFocus();
+								} catch (SocketTimeoutException e) {
+									JOptionPane.showMessageDialog(Authentication.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+									userChecker.interrupt();
 									SwitchServerWindow s = new SwitchServerWindow();
 									s.requestFocus();
 								}
@@ -197,8 +206,8 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 								progress.repaint();
 							}
 						});
+						userChecker.start();
 					}
-					userChecker.start();
 				}
 			}
 		}
@@ -269,6 +278,12 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 							granted = AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()));
 						} catch(IllegalAccessError e) {
 							JOptionPane.showMessageDialog(Authentication.this, "The server is full.", "Error", JOptionPane.ERROR_MESSAGE);
+							passChecker.interrupt();
+							SwitchServerWindow s = new SwitchServerWindow();
+							s.requestFocus();
+						} catch (SocketTimeoutException e) {
+							JOptionPane.showMessageDialog(Authentication.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
+							passChecker.interrupt();
 							SwitchServerWindow s = new SwitchServerWindow();
 							s.requestFocus();
 						}
