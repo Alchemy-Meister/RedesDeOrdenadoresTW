@@ -21,6 +21,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -173,7 +174,15 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 					
 							@Override
 							public void run() {
-								if(AdminClient.client != null && AdminClient.client.validateUserName(tfUserName.getText())) {
+								boolean granted = false;
+								try {
+								granted = AdminClient.client.validateUserName(tfUserName.getText());
+								} catch(IllegalAccessError e) {
+									JOptionPane.showMessageDialog(Authentication.this, "The server is full.", "Error", JOptionPane.ERROR_MESSAGE);
+									SwitchServerWindow s = new SwitchServerWindow();
+									s.requestFocus();
+								}
+								if(AdminClient.client != null && granted) {
 									if(error.isVisible()) {
 										error.setVisible(false);
 									}
@@ -255,7 +264,15 @@ public class Authentication extends JBackgroundedPanel implements FocusListener,
 				@Override
 				public void run() {
 					try {
-						if(AdminClient.client != null && AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()))) {
+						boolean granted = false;
+						try {
+							granted = AdminClient.client.validatePassword(Utilities.charArrayToString(pfPassword.getPassword()));
+						} catch(IllegalAccessError e) {
+							JOptionPane.showMessageDialog(Authentication.this, "The server is full.", "Error", JOptionPane.ERROR_MESSAGE);
+							SwitchServerWindow s = new SwitchServerWindow();
+							s.requestFocus();
+						}
+						if(AdminClient.client != null && granted) {
 							panelSigninA = new Animate(Authentication.this, Authentication.this.getBounds(), 
 									new Rectangle(Authentication.this.getX() - Authentication.this.getWidth(),
 											Authentication.this.getY(), Authentication.this.getWidth(), Authentication.this.getHeight()), 350);

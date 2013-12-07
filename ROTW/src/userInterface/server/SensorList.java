@@ -1,68 +1,83 @@
 package userInterface.server;
 
+import graphicInterface.JBackgroundedPanel;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JTextArea;
 
 import dataBase.Sensor;
-import util.Utilities;
-import graphicInterface.JBackgroundedPanel;
 
 @SuppressWarnings("serial")
-public class SensorList extends JBackgroundedPanel implements ActionListener{
+public class SensorList extends JDialog implements ActionListener{
 
-	AdminClient parent;
 	
 	JButton button;
+	private int width = 800;
+	private int height = 600;
+	private int deviceWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+	private int deviceHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	
-	public SensorList(String imageName, AdminClient parent, ArrayList<Sensor> sensor) {
-		super(imageName);
+	public SensorList(ArrayList<Sensor> sensor) {
+		super();
 		
-		this.parent = parent;
-		parent.setTitle("Sensor List");
+		JBackgroundedPanel bp = new JBackgroundedPanel("resources/Menu.png");
 		
-		this.setLayout(null);
+		bp.setLayout(null);
+		this.setModal(true);
+		this.setBounds(deviceWidth/2 - width/2, deviceHeight/2 - height/2, width, height);
 		
 		button = new JButton("Back");
-		button.setBounds(800 / 2 - 125 / 2, 400, 125, 25);
+		button.setBounds(800 / 2 + 125, 400, 125, 25);
 		
-		String[][] data = new String[sensor.size()][3];
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBounds(800 / 2 - 250 / 2, 160, 250, 200);
+		
+		JTextArea area = new JTextArea();
+		area.setForeground(new Color(2,214,247));
+		area.setBackground(Color.BLACK);
+		area.setEditable(false);
+		area.setOpaque(false);
+		
 		for(int i = 0; i < sensor.size(); i++) {
-			data[i][0] = String.valueOf(sensor.get(i).getId());
-			data[i][1] = sensor.get(i).getName();
-			data[i][2] = Utilities.booleanToString(sensor.get(i).isEnabled());
+			if(i < sensor.size() - 1)
+				area.setText(area.getText() + sensor.get(i) + "\n");
+			else
+				area.setText(area.getText() + sensor.get(i));
 		}
+		area.setBounds(0, 0, 250, sensor.size() * 26);
 		
-		DefaultTableModel model = new DefaultTableModel(data, new String[] {"ID", "DESCRIPTION", "VALUE"});
+		JScrollPane sp = new JScrollPane(area, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		JTable table = new JTable();
-		table.setModel(model);
+		panel.add(sp);
 		
-		table.setBounds(0, 0, 800, 600);
+		bp.add(panel);
+		bp.add(button);
 		
-		JScrollPane scroll = new JScrollPane(table);
-		
-		scroll.setBounds(0, 0, 800, 10);
-		scroll.add(table);
-		
-		this.add(button);
-		this.add(scroll);
+		this.add(bp);
 		
 		button.addActionListener(this);
+		
+		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		this.setResizable(false);
+		this.setVisible(true);
+		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(button)) {
-			Menu menu = new Menu(parent, "resources/Menu.png");
-			menu.setLocation(SensorList.this.getX() - SensorList.this.getWidth(), SensorList.this.getY());
-			parent.getContentPane().add(menu, 0);
-			Utilities.transitionEffect(SensorList.this, menu, parent, true);
+			SensorList.this.dispose();
 		}
 	}
 }

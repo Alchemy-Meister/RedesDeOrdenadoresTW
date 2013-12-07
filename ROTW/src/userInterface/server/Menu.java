@@ -88,22 +88,20 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		AdminClient.signout.setEnabled(false);
-		sensorList.setEnabled(false);
-		setupSensor.setEnabled(false);
-		setupGPS.setEnabled(false);
-		photo.setEnabled(false);
-		signout.setEnabled(false);
-		rc.setVisible(false);
-		sp.setVisible(true);
-		
 		if(e.getSource().equals(sensorList)) {
+			AdminClient.signout.setEnabled(false);
+			sensorList.setEnabled(false);
+			setupSensor.setEnabled(false);
+			setupGPS.setEnabled(false);
+			photo.setEnabled(false);
+			signout.setEnabled(false);
+			rc.setVisible(false);
+			sp.setVisible(true);
 			new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
 					ArrayList<Sensor> sensorListArray = AdminClient.client.getSensorList();
-					System.out.println(sensorListArray.get(0).toString());
 					sensorList.setEnabled(true);
 					setupSensor.setEnabled(true);
 					setupGPS.setEnabled(true);
@@ -112,13 +110,20 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 					sp.setVisible(false);
 					rc.setVisible(true);
 					AdminClient.signout.setEnabled(true);
-					SensorList sensor = new SensorList("resources/Menu.png", parent, sensorListArray);
-					sensor.setLocation(Menu.this.getX() + Menu.this.getWidth(), Menu.this.getY());
-					parent.getContentPane().add(sensor, 0);
-					Utilities.transitionEffect(Menu.this, sensor, parent, false);
+					SensorList s = new SensorList(sensorListArray);
+					s.requestFocus();
 				}
 			}).start();
 		} else if(e.getSource().equals(setupSensor)) {
+			AdminClient.signout.setEnabled(false);
+			sensorList.setEnabled(false);
+			setupSensor.setEnabled(false);
+			setupGPS.setEnabled(false);
+			photo.setEnabled(false);
+			signout.setEnabled(false);
+			rc.setVisible(false);
+			sp.setVisible(true);
+			
 			sensorList.setEnabled(true);
 			setupSensor.setEnabled(true);
 			setupGPS.setEnabled(true);
@@ -126,14 +131,15 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 			signout.setEnabled(true);
 			sp.setVisible(false);
 			rc.setVisible(true);
+			AdminClient.signout.setEnabled(true);
+			SetupSensor s = new SetupSensor();
+			s.requestFocus();
 		} else if(e.getSource().equals(setupGPS)) {
-			sensorList.setEnabled(true);
-			setupSensor.setEnabled(true);
-			setupGPS.setEnabled(true);
-			photo.setEnabled(true);
-			signout.setEnabled(true);
-			sp.setVisible(false);
-			rc.setVisible(true);
+			SetupGPS s = new SetupGPS(parent);
+			s.setLocation(Menu.this.getX() + Menu.this.getWidth(), Menu.this.getY());
+			parent.getContentPane().add(s, 0);
+			Utilities.transitionEffect(Menu.this, s, parent, false);
+			AdminClient.signout.setEnabled(true);
 		} else if(e.getSource().equals(photo)) {
 			sensorList.setEnabled(true);
 			setupSensor.setEnabled(true);
@@ -143,6 +149,14 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 			sp.setVisible(false);
 			rc.setVisible(true);
 		} else if(e.getSource().equals(signout)) {
+			AdminClient.signout.setEnabled(false);
+			sensorList.setEnabled(false);
+			setupSensor.setEnabled(false);
+			setupGPS.setEnabled(false);
+			photo.setEnabled(false);
+			signout.setEnabled(false);
+			rc.setVisible(false);
+			sp.setVisible(true);
 			new Thread(new Runnable() {
 				
 				@Override

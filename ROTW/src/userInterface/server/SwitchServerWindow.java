@@ -87,8 +87,7 @@ public class SwitchServerWindow extends JDialog implements ActionListener, KeyLi
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if(e.getSource().equals(connectb))
-		{
+		if(e.getSource().equals(connectb)) {
 			connectToServer();
 		}
 		

@@ -18,13 +18,15 @@ import util.Utilities;
 import dataBase.DatabaseController;
 import dataBase.Record;
 import dataBase.Sensor;
+import dataBase.User;
 
 public class Service implements Runnable {
 	
 	private SocketManager clientSocket;
 	private boolean exit = false;
-	private String userName = "";
-	private String password = "";
+	private User user = new User();
+	
+	private boolean endSesion = false;
 	
 	public Service(SocketManager clientSocket) {
 		this.clientSocket = clientSocket;
@@ -32,7 +34,7 @@ public class Service implements Runnable {
 
 	@Override
 	public void run() {
-		while(!exit) {
+		while(!exit && !endSesion) {
 			try {
 				String message = clientSocket.Leer();
 				if(message != null) {
@@ -52,16 +54,16 @@ public class Service implements Runnable {
 						boolean correct = false;
 						correct = DatabaseController.validateUserName(parameter.toString());
 						if(correct) {
-							userName = parameter.toString();
+							user.setUserName(parameter.toString());
 							clientSocket.Escribir("301 OK Bienvenido " + parameter.toString() + ".\n");
 						} else {
 							clientSocket.Escribir("501 ERR Falta el nombre de usuario.\n");
 						}
 					} else if(command.equals("CLAVE")) {
 						boolean correct = false;
-						password = parameter.toString();
-						if(!password.equals("")) {	
-								correct = DatabaseController.validateUser(userName, password);
+						user.setPassword(parameter.toString());
+						if(!user.getPassword().equals("")) {	
+								correct = DatabaseController.validateUser(user.getUserName(), user.getPassword());
 							if(correct) {
 								clientSocket.Escribir("302 OK Bienvenido al sistema.\n");
 							} else {
@@ -75,7 +77,7 @@ public class Service implements Runnable {
 						exit = true;
 					} else if(command.equals("LISTSENSOR")) {
 						clientSocket.Escribir("222 OK Lista de sensores.\n");
-						ArrayList<Sensor> sensorList = DatabaseController.getSensorList(userName);
+						ArrayList<Sensor> sensorList = DatabaseController.getSensorList(user.getUserName());
 						for(int i = 0; i < sensorList.size(); i++) {
 							clientSocket.Escribir(sensorList.get(i).toString()  + '\n');
 						}
@@ -117,14 +119,14 @@ public class Service implements Runnable {
 						}
 					} else if(command.equals("ONGPS")) {
 						try {
-							DatabaseController.enableGPS(userName);
+							DatabaseController.enableGPS(user.getUserName());
 							clientSocket.Escribir("315 OK GPS activado.\n");
 						} catch (NoPermissionException e) {
 							clientSocket.Escribir("529 ERR GPS en estado ON.\n");
 						}
 					} else if(command.equals("OFFGPS")) {
 						try {
-							DatabaseController.disableGPS(userName);
+							DatabaseController.disableGPS(user.getUserName());
 							clientSocket.Escribir("316 OK GPS desactivado.\n");
 						} catch (NoPermissionException e) {
 							clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
@@ -173,5 +175,15 @@ public class Service implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		Server.serviceList.remove(this);
+		System.out.println("Sesion over");
+	}
+	
+	public void terminateSesion() {
+		endSesion = true;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 }

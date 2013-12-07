@@ -35,7 +35,6 @@ public class AdminClient extends JFrame implements ActionListener {
 	public AdminClient() {
 		
 		this.getContentPane().setPreferredSize(new Dimension(width, height));
-		this.setLayout(null);
 		this.setBackground(Color.BLACK);
 		
 		if(System.getProperty("os.name").startsWith("Mac")) {
