@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.naming.NoPermissionException;
@@ -70,13 +71,12 @@ public class DatabaseController {
 			return correct;
 		}
 		
-		public static synchronized ArrayList<Sensor> getSensorList(String userName) {
+		public static synchronized ArrayList<Sensor> getSensorList() {
 			ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
 			Connection connection = connectToDatabase();
 			PreparedStatement statement;
 			try {
-				statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s, USER u where u.ID = USER_ID AND USERNAME = ?;");
-				statement.setString(1, userName);
+				statement = connection.prepareStatement("Select ID, NAME, STATE from SENSOR;");
 				ResultSet result = statement.executeQuery();
 				while(result.next()) {
 					sensorList.add(new Sensor(result.getInt("ID"), result.getString("NAME"), Utilities.intToBoolean(result.getInt("STATE"))));
@@ -186,16 +186,14 @@ public class DatabaseController {
 			}
 		}
 		
-		public static synchronized void enableGPS(String userName) throws NoPermissionException {
+		public static synchronized void enableGPS() throws NoPermissionException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS g, USER u where g.USER_ID = u.ID and u.USERNAME = ?;");
-				statement.setString(1, userName);
+				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS;");
 				ResultSet result = statement.executeQuery();
 				if(result.next()) {
 					if(!Utilities.intToBoolean(result.getInt("STATE"))) {
-						statement = connection.prepareStatement("Update GPS set STATE = 1 where USER_ID = (Select ID from USER where USERNAME = ?);");
-						statement.setString(1, userName);
+						statement = connection.prepareStatement("Update GPS set STATE = 1;");
 						statement.execute();
 						result.close();
 						statement.close();
@@ -215,16 +213,14 @@ public class DatabaseController {
 			}
 		}
 		
-		public static synchronized void disableGPS(String userName) throws NoPermissionException {
+		public static synchronized void disableGPS() throws NoPermissionException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS g, USER u where g.USER_ID = u.ID and u.USERNAME = ?;");
-				statement.setString(1, userName);
+				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS;");
 				ResultSet result = statement.executeQuery();
 				if(result.next()) {
 					if(Utilities.intToBoolean(result.getInt("STATE"))) {
-						statement = connection.prepareStatement("Update GPS set STATE = 0 where USER_ID = (Select ID from USER where USERNAME = ?);");
-						statement.setString(1, userName);
+						statement = connection.prepareStatement("Update GPS set STATE = 0;");
 						statement.execute();
 						result.close();
 						statement.close();
@@ -394,5 +390,63 @@ public class DatabaseController {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		public static synchronized boolean isGPSActivated() {
+			boolean activated = false;
+			Connection connection = connectToDatabase();
+			try {
+				PreparedStatement statement = connection.prepareStatement("Select * from GPS;");
+				ResultSet resultSet = statement.executeQuery();
+				activated = Utilities.intToBoolean(resultSet.getInt("STATE"));
+				resultSet.close();
+				statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return activated;
+		}
+		
+		public static synchronized GPSRecord getGPSRecord() {
+			Connection connection = connectToDatabase();
+			GPSRecord gpsrecord = null;
+			try {
+				PreparedStatement statement = connection.prepareStatement("Select * from GPSRECORD;");
+				ResultSet resultSet = statement.executeQuery();
+				gpsrecord = new GPSRecord(resultSet.getFloat("XDEGREE"), resultSet.getFloat("XMIN"), resultSet.getFloat("XSEC"),
+						resultSet.getFloat("YDEGREE"), resultSet.getFloat("YMIN"), resultSet.getFloat("YSEC"), resultSet.getInt("GPS_SENSOR"));
+				resultSet.close();
+				statement.close();
+				connection.close();
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+			return gpsrecord;
+		}
+		
+		public static synchronized String getCellValue(String cell_id) throws IllegalAccessError {
+			Connection connection = connectToDatabase();
+			String value = "";
+			try {
+				PreparedStatement statement = connection.prepareStatement("Select * from CELL where CELL_ID = ?");
+				statement.setString(1, cell_id);
+				ResultSet result = statement.executeQuery();
+				if(result.next()) {
+					value = new DecimalFormat("0.##").format(result.getFloat("XDEGREE")) + "\u00b0" + 
+						new DecimalFormat("0.##").format(result.getFloat("XMIN")) + "'" + new DecimalFormat("0.##").format(result.getFloat("XSEC")) +
+						"\"" + "-" + new DecimalFormat("0.##").format(result.getFloat("YDEGREE")) + "\u00b0" + 
+						new DecimalFormat("0.##").format(result.getFloat("YMIN")) + "'" +
+						new DecimalFormat("0.##").format(result.getFloat("YSEC")) + "\"";
+					result.close();
+					statement.close();
+					connection.close();
+				} else {
+					throw new IllegalAccessError();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return value;
 		}
 }

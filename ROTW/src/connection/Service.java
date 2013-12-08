@@ -1,14 +1,11 @@
 package connection;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.imageio.ImageIO;
 import javax.naming.NoPermissionException;
 
 import com.github.sarxos.webcam.Webcam;
@@ -16,6 +13,7 @@ import com.github.sarxos.webcam.Webcam;
 import util.NotFoundException;
 import util.Utilities;
 import dataBase.DatabaseController;
+import dataBase.GPSRecord;
 import dataBase.Record;
 import dataBase.Sensor;
 import dataBase.User;
@@ -78,7 +76,7 @@ public class Service implements Runnable {
 							exit = true;
 						} else if(command.equals("LISTSENSOR")) {
 							clientSocket.Escribir("222 OK Lista de sensores.\n");
-							ArrayList<Sensor> sensorList = DatabaseController.getSensorList(user.getUserName());
+							ArrayList<Sensor> sensorList = DatabaseController.getSensorList();
 							for(int i = 0; i < sensorList.size(); i++) {
 								clientSocket.Escribir(sensorList.get(i).toString()  + '\n');
 							}
@@ -120,14 +118,14 @@ public class Service implements Runnable {
 							}
 						} else if(command.equals("ONGPS")) {
 							try {
-								DatabaseController.enableGPS(user.getUserName());
+								DatabaseController.enableGPS();
 								clientSocket.Escribir("315 OK GPS activado.\n");
 							} catch (NoPermissionException e) {
 								clientSocket.Escribir("529 ERR GPS en estado ON.\n");
 							}
 						} else if(command.equals("OFFGPS")) {
 							try {
-								DatabaseController.disableGPS(user.getUserName());
+								DatabaseController.disableGPS();
 								clientSocket.Escribir("316 OK GPS desactivado.\n");
 							} catch (NoPermissionException e) {
 								clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
@@ -152,21 +150,26 @@ public class Service implements Runnable {
 								}
 							}
 						} else if(command.equals("GET_FOTO")) {
-							//TODO check if the gps is on
+							//TODO check if the gps is on.
 							Webcam webcam = Webcam.getDefault();
 							webcam.open();
 							BufferedImage image = webcam.getImage();
 							webcam.close();
-							ImageIO.write(image, "PNG", new File("photo.png"));
-							FileInputStream imageFile = new FileInputStream("photo.png");
-							clientSocket.Escribir("316 OK " + imageFile.available() +  " Bytes transmitiendo.\n");
-							
-							imageFile.close();
-							new File("photo.png").delete();
-							clientSocket.Escribir("530 ERR GPS en estado OFF.\n");
+							//TODO send photo.
+							clientSocket.Escribir("316 OK " + " " +  " Bytes transmitiendo.\n");
 						} else if(command.equals("GET_LOC")) {
-							//TODO only after sending a photo.
-							clientSocket.Escribir("124 OK\n");
+							if(DatabaseController.isGPSActivated()) {
+								GPSRecord r = DatabaseController.getGPSRecord();
+								clientSocket.Escribir("124 OK " + r.toString() + "\n");
+							} else {
+								//TODO connect to localization server.
+								LocalizatioClient c = new LocalizatioClient("127.0.0.1", 6666);
+								c.validateUserName(user.getUserName());
+								c.validateUserName(user.getUserName());
+								c.getCellVal();
+								c.signOut();
+							}
+							
 						}
 					}
 				} else {

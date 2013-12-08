@@ -1,6 +1,9 @@
 package connection;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.nio.channels.NonReadableChannelException;
@@ -200,12 +203,31 @@ public class Client {
 	public ImageIcon getPhoto() {
 		ImageIcon image = null;
 		try {
-			clientSocket.Escribir("GET_FOTO \n");
+			clientSocket.setSoTimeout(15000);
+			clientSocket.Escribir("GET_FOTO\n");
 			serverAnswer = clientSocket.Leer();
-			
+			if(serverAnswer.contains("316 OK")) {
+				int lenght = Integer.valueOf(serverAnswer.split(" ")[2]);
+				System.out.println(lenght);
+				InputStream fis = clientSocket.getSocket().getInputStream();
+				ByteArrayOutputStream imageBytes = new ByteArrayOutputStream(lenght);
+				int i = 0;
+				byte[] buffer = new byte[1024];
+				while(i < lenght - 1 && i != -1) {
+					i += fis.read(buffer, 0, buffer.length);
+					imageBytes.write(buffer, 0, buffer.length);
+				}
+				FileOutputStream fos = new FileOutputStream("photo.png");
+                fos.write(imageBytes.toByteArray());
+                fos.close();
+                imageBytes.close();
+                
+			}
+			clientSocket.setSoTimeout(5000);
 		} catch(IOException e) {
-			
+			e.printStackTrace();
 		}
+		System.out.println(serverAnswer);
 		return image;
 	}
 	
@@ -217,5 +239,17 @@ public class Client {
 			
 		}
 		System.out.println(serverAnswer);
+	}
+	
+	public static void main(String[] argv) {
+		try {
+			Client c = new Client("localhost", 1234);
+			c.getLocation();
+			c.signOut();
+		} catch (ConnectException e) {
+			
+		} catch (IOException e) {
+			
+		}
 	}
 }

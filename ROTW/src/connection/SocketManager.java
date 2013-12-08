@@ -95,4 +95,8 @@ public class SocketManager extends Socket {
 			e.printStackTrace();
 		}
     }
+    
+    public Socket getSocket() {
+    	return mySocket;
+    }
 }

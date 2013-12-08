@@ -73,8 +73,4 @@ public class Server {
 	public ArrayList<Service> getServices() {
 		return serviceList;
 	}
-	
-	public static void main(String[] args) {
-		new Server(1234);
-	}
 }
