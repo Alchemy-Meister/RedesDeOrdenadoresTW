@@ -48,8 +48,8 @@ public class ServerWindow extends JFrame implements ActionListener {
 	private AllUserTableModel allmodel;
 	
 	private JButton addUser = new JButton("Add User");
-	private JButton removeUser = new JButton("Remove User");
-	private JButton updateUser = new JButton("Update User");
+	private JButton removeUser = new JButton("Remove selected users");
+	private JButton updateUser = new JButton("Update selected users");
 	
 	JScrollPane sp;
 	
@@ -103,8 +103,8 @@ public class ServerWindow extends JFrame implements ActionListener {
 		allUsersPanel.add(new JScrollPane(allUsers, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 		
 		addUser.setBounds(0, allUsersPanel.getY() + allUsersPanel.getHeight(), 100, 25);
-		updateUser.setBounds(addUser.getX() + addUser.getWidth() + 3, addUser.getY(), 100, 25);
-		removeUser.setBounds(updateUser.getX() + updateUser.getWidth() + 3, updateUser.getY(), 125, 25);
+		updateUser.setBounds(addUser.getX() + addUser.getWidth() + 3, addUser.getY(), 175, 25);
+		removeUser.setBounds(updateUser.getX() + updateUser.getWidth() + 3, updateUser.getY(), 175, 25);
 		
 		this.add(updateConnectedUsers);
 		this.add(tablePanel);
@@ -175,11 +175,70 @@ public class ServerWindow extends JFrame implements ActionListener {
 			}
 			updateUserTable();
 		} else if(e.getSource().equals(addUser)) {
-			
+			NewUser n = new NewUser(this);
+			n.requestFocus();
 		} else if(e.getSource().equals(removeUser)) {
-			
+			if(allUsers.getCellEditor() != null) {
+				allUsers.getCellEditor().stopCellEditing();
+			}
+			ArrayList<User> removeList = new ArrayList<User>();
+			for(int i = 0; i < allmodel.getRowCount(); i++) {
+				boolean isChecked = (Boolean) allmodel.getValueAt(i, 3);
+			    if (isChecked) {
+			    	removeList.add(new User((String) allmodel.getValueAt(i, 0), (String) allmodel.getValueAt(i, 1)));
+			    }
+			}
+			for(int i = 0; i < removeList.size(); i++) {
+				try {
+					DatabaseController.removeUser(removeList.get(i).getUserName(), removeList.get(i).getPassword());
+					ArrayList<Service> removeServices = new ArrayList<Service>();
+					for(int j = 0; j < server.getServices().size(); j++) {
+						if(server.getServices().get(j).getUser().getUserName().equals(removeList.get(i).getUserName())) {
+							server.getServices().get(i).terminateSesion();
+							removeServices.add(server.getServices().get(j));
+						}
+					}
+					for(int j = 0; j < removeServices.size(); j++) {
+						if(server.getServices().get(j).getUser().getUserName().equals(removeList.get(i).getUserName())) {
+							server.getServices().remove(j);
+						}
+					}
+				} catch(IllegalAccessError e1) {
+					JOptionPane.showMessageDialog(ServerWindow.this, "Username " + removeList.get(i).getUserName() + " does not exit." , "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			updateAllUSerTable();
+			updateUserTable();
 		} else if(e.getSource().equals(updateUser)) {
-			
+			if(allUsers.getCellEditor() != null) {
+				allUsers.getCellEditor().stopCellEditing();
+			}
+			ArrayList<User> userList = DatabaseController.getUsers();
+			for (int i = 0; i < allmodel.getRowCount(); i++) {
+			     boolean isChecked = (Boolean) allmodel.getValueAt(i, 2);
+			     if (isChecked) {
+			    	 try {
+				    	 if(!userList.get(i).getUserName().equals((String) allmodel.getValueAt(i, 0))) {
+				    		 DatabaseController.updateUserName(userList.get(i).getUserName(), (String) allmodel.getValueAt(i, 0));
+				    	 }
+				    	 DatabaseController.updatePassword((String) allmodel.getValueAt(i, 0), userList.get(i).getPassword(), (String) allmodel.getValueAt(i, 1));
+				    	 allmodel.setValueAt(false, i, 2);
+				    	 for(int j = 0; j < server.getServices().size(); j++) {
+				    		 if(server.getServices().get(j).getUser().getUserName().equals(userList.get(i).getUserName())) {
+				    			 server.getServices().get(j).getUser().setUserName((String) allmodel.getValueAt(i, 0));
+				    			 if(!server.getServices().get(j).getUser().getPassword().equals("")) {
+				    				 server.getServices().get(j).getUser().setPassword((String) allmodel.getValueAt(i, 1));
+				    			 }
+				    		 }
+				    	 }
+			    	 } catch(IllegalAccessError e1) {
+			    		 allmodel.setValueAt(userList.get(i).getUserName(), i, 0);
+			    		 allmodel.setValueAt(userList.get(i).getPassword(), i, 1);
+			    		 JOptionPane.showMessageDialog(ServerWindow.this, "Username " + (String) allmodel.getValueAt(i, 0) + " is already in use." , "Error", JOptionPane.ERROR_MESSAGE);
+			    	 }
+			    }
+			}
+			updateUserTable();
 		}
 	}
 	
@@ -192,5 +251,16 @@ public class ServerWindow extends JFrame implements ActionListener {
 			model.addRow(new Object[] {userList.get(i).getUserName(), userList.get(i).getPassword(), false});
 		}
 		model.fireTableDataChanged();
+	}
+	
+	public void updateAllUSerTable() {
+		ArrayList<User> userList = DatabaseController.getUsers();
+		for(int i = allmodel.getRowCount() - 1; i >= 0 ; i--) {
+			allmodel.removeRow(i);
+		}
+		for(int i = 0; i < userList.size(); i++) {
+			allmodel.addRow(new Object[] {userList.get(i).getUserName(), userList.get(i).getPassword(), false, false});
+		}
+		allmodel.fireTableDataChanged();
 	}
 }

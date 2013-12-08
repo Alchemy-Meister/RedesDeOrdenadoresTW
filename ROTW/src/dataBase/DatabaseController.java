@@ -306,4 +306,93 @@ public class DatabaseController {
 			}
 			return userlist;
 		}
+		
+		public static synchronized void updateUserName(String oldName, String newName) throws IllegalAccessError {
+			Connection connection = connectToDatabase();
+			try {
+				PreparedStatement statement = connection.prepareStatement("Select * from USER where USERNAME = ?;");
+				statement.setString(1, newName);
+				ResultSet result = statement.executeQuery();
+				if(result.next()) {
+					result.close();
+					statement.close();
+					connection.close();
+					throw new IllegalAccessError();
+				} else {
+					statement = connection.prepareStatement("Update USER set USERNAME = ? where USERNAME = ?;");
+					statement.setString(1, newName);
+					statement.setString(2, oldName);
+				}
+				statement.execute();
+				statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public static synchronized void updatePassword(String currentUserName, String oldPassword, String newPassword) {
+			Connection connection = connectToDatabase();
+			try {
+				PreparedStatement statement = connection.prepareStatement("Update USER set PASSWORD = ? where USERNAME = ? and PASSWORD = ?;");
+				statement.setString(1, newPassword);
+				statement.setString(2, currentUserName);
+				statement.setString(3, oldPassword);
+				statement.execute();
+				statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public static synchronized void addUser(String username, String password) throws IllegalAccessError {
+			Connection connection = connectToDatabase();
+			PreparedStatement statement;
+			try {
+				statement = connection.prepareStatement("Select * from USER where USERNAME = ?;");
+				statement.setString(1, username);
+				ResultSet result = statement.executeQuery();
+				if(result.next()) {
+					result.close();
+					statement.close();
+					connection.close();
+					throw new IllegalAccessError();
+				} else {
+					statement = connection.prepareStatement("Insert into USER(USERNAME, PASSWORD) values(?, ?);");
+					statement.setString(1, username);
+					statement.setString(2, password);
+					statement.execute();
+					statement.close();
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public static synchronized void removeUser(String username, String password) {
+			Connection connection = connectToDatabase();
+			PreparedStatement statement;
+			try {
+				statement = connection.prepareStatement("Select * from USER where USERNAME = ?;");
+				statement.setString(1, username);
+				ResultSet result = statement.executeQuery();
+				if(!result.next()) {
+					result.close();
+					statement.close();
+					connection.close();
+					throw new IllegalAccessError();
+				} else {
+					statement = connection.prepareStatement("Delete from USER where USERNAME = ? and PASSWORD = ?;");
+					statement.setString(1, username);
+					statement.setString(2, password);
+					statement.execute();
+					statement.close();
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 }
