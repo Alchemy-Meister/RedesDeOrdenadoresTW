@@ -66,12 +66,11 @@ public class LocationService implements Runnable {
 								clientSocket.Escribir("528 ERR Falta parametro cell_id.\n");
 							} else {
 								try {
-									DatabaseController.getCellValue(parameter.toString());
-									clientSocket.Escribir("224 OK "+ "" + "\n");
+									String v = DatabaseController.getCellValue(parameter.toString());
+									clientSocket.Escribir("224 OK "+ v + "\n");
 								} catch(IllegalAccessError e) {
-									
+									clientSocket.Escribir("527 ERR Celda desconocida.\n");
 								}
-								clientSocket.Escribir("527 ERR Celda desconocida.\n");
 							}
 						}
 					}

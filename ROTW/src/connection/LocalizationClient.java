@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
-public class LocalizatioClient {
+public class LocalizationClient {
 	
 	private SocketManager clientSocket;
 	private String serverAnswer = null;
 	
-	public LocalizatioClient(String ip, int port) throws IOException, ConnectException {
+	public LocalizationClient(String ip, int port) throws IOException, ConnectException {
 		try {
 			clientSocket = new SocketManager(ip, port);
 			clientSocket.setSoTimeout(5000);
@@ -68,7 +68,7 @@ public class LocalizatioClient {
 		System.out.println(serverAnswer);
 	}
 	
-	public void getCellVal() throws SocketTimeoutException {
+	public String getCellVal() throws SocketTimeoutException {
 		try {
 			clientSocket.Escribir("GETCOOR 1\n");
 			serverAnswer = clientSocket.Leer();
@@ -76,5 +76,6 @@ public class LocalizatioClient {
 			throw new SocketTimeoutException();
 		}
 		System.out.println(serverAnswer);
+		return serverAnswer;
 	}
 }

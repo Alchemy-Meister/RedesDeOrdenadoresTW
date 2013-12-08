@@ -163,10 +163,10 @@ public class Service implements Runnable {
 								clientSocket.Escribir("124 OK " + r.toString() + "\n");
 							} else {
 								//TODO connect to localization server.
-								LocalizatioClient c = new LocalizatioClient("127.0.0.1", 6666);
+								LocalizationClient c = new LocalizationClient("127.0.0.1", 6666);
 								c.validateUserName(user.getUserName());
-								c.validateUserName(user.getUserName());
-								c.getCellVal();
+								c.validatePassword(user.getPassword());
+								clientSocket.Escribir(c.getCellVal() + "\n");
 								c.signOut();
 							}
 							
