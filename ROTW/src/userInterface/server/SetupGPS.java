@@ -93,9 +93,9 @@ public class SetupGPS extends JBackgroundedPanel implements ActionListener {
 				public void run() {
 					try {
 						AdminClient.client.disableGPS();
-						JOptionPane.showMessageDialog(SetupGPS.this, "The GPS has been successfully enabled.");
+						JOptionPane.showMessageDialog(SetupGPS.this, "The GPS has been successfully disabled.");
 					} catch(IllegalAccessError e) {
-						JOptionPane.showMessageDialog(SetupGPS.this, "Selected GPS is already enabled.", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(SetupGPS.this, "Selected GPS is already disabled.", "Error", JOptionPane.ERROR_MESSAGE);
 					} catch (SocketTimeoutException e) {
 						JOptionPane.showMessageDialog(SetupGPS.this, "The connection is down.", "Error", JOptionPane.ERROR_MESSAGE);
 						

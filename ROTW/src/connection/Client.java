@@ -243,7 +243,7 @@ public class Client {
 	
 	public static void main(String[] argv) {
 		try {
-			Client c = new Client("localhost", 1234);
+			Client c = new Client("192.168.1.44", 1234);
 			c.getLocation();
 			c.signOut();
 		} catch (ConnectException e) {

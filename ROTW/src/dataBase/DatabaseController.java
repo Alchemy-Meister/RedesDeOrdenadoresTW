@@ -127,7 +127,7 @@ public class DatabaseController {
 		public static synchronized void enableSensor(String sensor_id) throws NoPermissionException, NotFoundException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s, USER u where s.ID = ? AND USER_ID = u.ID;");
+				PreparedStatement statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s where ID = ?;");
 				statement.setString(1, sensor_id);
 				ResultSet result = statement.executeQuery();
 				if(!result.next()) {
@@ -158,7 +158,7 @@ public class DatabaseController {
 		public static synchronized void disableSensor(String sensor_id) throws NoPermissionException, NotFoundException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s, USER u where s.ID = ? AND USER_ID = u.ID;");
+				PreparedStatement statement = connection.prepareStatement("Select s.ID, NAME, STATE from SENSOR s where s.ID = ?;");
 				statement.setString(1, sensor_id);
 				ResultSet result = statement.executeQuery();
 				if(!result.next()) {
@@ -189,7 +189,7 @@ public class DatabaseController {
 		public static synchronized void enableGPS() throws NoPermissionException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS;");
+				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS g;");
 				ResultSet result = statement.executeQuery();
 				if(result.next()) {
 					if(!Utilities.intToBoolean(result.getInt("STATE"))) {
@@ -216,7 +216,7 @@ public class DatabaseController {
 		public static synchronized void disableGPS() throws NoPermissionException {
 			Connection connection = connectToDatabase();
 			try {
-				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS;");
+				PreparedStatement statement = connection.prepareStatement("Select g.* from GPS g;");
 				ResultSet result = statement.executeQuery();
 				if(result.next()) {
 					if(Utilities.intToBoolean(result.getInt("STATE"))) {
@@ -236,7 +236,7 @@ public class DatabaseController {
 				statement.close();
 				connection.close();
 			} catch (SQLException e) {
-			
+				e.printStackTrace();
 			}
 		}
 		

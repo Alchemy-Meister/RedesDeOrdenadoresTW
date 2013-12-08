@@ -22,4 +22,8 @@ public class LocationServer {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void main(String[] argv) {
+		new LocationServer();
+	}
 }
