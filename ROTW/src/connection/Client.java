@@ -246,6 +246,7 @@ public class Client {
 			Client c = new Client("192.168.1.44", 1234);
 			c.validateUserName("admin");
 			c.validatePassword("admin");
+			c.enableGPS();
 			c.getLocation();
 			c.signOut();
 		} catch (ConnectException e) {

@@ -154,13 +154,10 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 			Utilities.transitionEffect(Menu.this, s, parent, false);
 			AdminClient.signout.setEnabled(true);
 		} else if(e.getSource().equals(photo)) {
-			sensorList.setEnabled(true);
-			setupSensor.setEnabled(true);
-			setupGPS.setEnabled(true);
-			photo.setEnabled(true);
-			signout.setEnabled(true);
-			sp.setVisible(false);
-			rc.setVisible(true);
+			PhotoLoc s = new PhotoLoc(parent);
+			s.setLocation(Menu.this.getX() + Menu.this.getWidth(), Menu.this.getY());
+			parent.getContentPane().add(s, 0);
+			Utilities.transitionEffect(Menu.this, s, parent, false);
 		} else if(e.getSource().equals(signout)) {
 			AdminClient.signout.setEnabled(false);
 			sensorList.setEnabled(false);
