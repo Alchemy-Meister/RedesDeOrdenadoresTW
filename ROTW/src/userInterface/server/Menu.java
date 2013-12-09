@@ -5,6 +5,7 @@ import graphicInterface.JBackgroundedPanel;
 import graphicInterface.RotatingComponent;
 import graphicInterface.SpinningWheel;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.SocketTimeoutException;
@@ -54,6 +55,8 @@ public class Menu extends JBackgroundedPanel implements ActionListener {
 		umbrellaCopyright.setIcon(new ImageIcon(Utilities.resizeImage(25, 25, "resources/UmbrellaLogo.png")));
 		
 		JPanel buttonPanel = new JPanel();
+		buttonPanel.setBackground(new Color(0,0,0,0));
+		buttonPanel.setOpaque(false);
 		buttonPanel.setLayout(null);
 		
 		sensorList.setBounds(0, 0, 125, 25);
