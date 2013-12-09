@@ -26,8 +26,11 @@ public class Service implements Runnable {
 	
 	private boolean endSesion = false;
 	
-	public Service(SocketManager clientSocket) {
+	String ip;
+	
+	public Service(SocketManager clientSocket, String ip) {
 		this.clientSocket = clientSocket;
+		this.ip = ip;
 	}
 
 	@Override
@@ -163,7 +166,7 @@ public class Service implements Runnable {
 								clientSocket.Escribir("124 OK " + r.toString() + "\n");
 							} else {
 								//TODO connect to localization server.
-								LocalizationClient c = new LocalizationClient("127.0.0.1", 6666);
+								LocalizationClient c = new LocalizationClient(ip, 6666);
 								c.validateUserName(user.getUserName());
 								c.validatePassword(user.getPassword());
 								clientSocket.Escribir(c.getCellVal() + "\n");

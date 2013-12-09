@@ -102,7 +102,6 @@ public class SetupSensor extends JDialog implements ActionListener{
 		
 		area = new JTextArea();
 		area.setForeground(new Color(2,214,247));
-		area.setBackground(Color.BLACK);
 		area.setEditable(false);
 		area.setOpaque(false);
 		

@@ -231,7 +231,7 @@ public class Client {
 		return image;
 	}
 	
-	public void getLocation() {
+	public String getLocation() {
 		try {
 			clientSocket.Escribir("GET_LOC\n");
 			serverAnswer = clientSocket.Leer();
@@ -239,6 +239,7 @@ public class Client {
 			
 		}
 		System.out.println(serverAnswer);
+		return serverAnswer.replace("124 OK", "");
 	}
 	
 	public static void main(String[] argv) {

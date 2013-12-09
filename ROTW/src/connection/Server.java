@@ -16,8 +16,10 @@ public class Server {
 	
 	protected static ArrayList<Service> serviceList = new ArrayList<Service>();
 	SocketManager clientSocket;
+	String ip;
 	
-	public Server(int port) { 
+	public Server(int port, String locationIP) { 
+		ip = locationIP;
 		try {
 			serverS = new ServerSocket(port);
 		} catch (IOException e) {
@@ -30,7 +32,7 @@ public class Server {
 			try {
 				clientSocket = new SocketManager(serverS.accept());
 				if(serviceList.size() < userLimit) {
-					Service service = new Service(clientSocket);
+					Service service = new Service(clientSocket, ip);
 					serviceList.add(service);
 					new Thread(service).start();
 				} else {

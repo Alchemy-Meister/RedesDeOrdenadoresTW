@@ -53,7 +53,7 @@ public class ServerWindow extends JFrame implements ActionListener {
 	
 	JScrollPane sp;
 	
-	public ServerWindow() {
+	public ServerWindow(String locationIP) {
 		super("Server Administration");
 		this.setBounds(deviceWidth / 2 - width / 2,  deviceHeight / 2 - height / 2, width, height);
 		this.setResizable(false);
@@ -124,7 +124,7 @@ public class ServerWindow extends JFrame implements ActionListener {
 		updateUser.addActionListener(this);
 		removeUser.addActionListener(this);
 		
-		server = new Server(1234);
+		server = new Server(1234, locationIP);
 		
 		serverActivation = new Thread( new Runnable() {
 			
@@ -145,10 +145,11 @@ public class ServerWindow extends JFrame implements ActionListener {
 		maximumUser.setText(server.getMaximumUserLimit() + "");
 		
 		this.setVisible(true);
+		
 	}
 	
 	public static void main(String[] argv) {
-		new ServerWindow();
+		new ServerWindow(argv[0]);
 	}
 
 	@Override
